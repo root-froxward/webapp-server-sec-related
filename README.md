@@ -11,6 +11,7 @@
 
 **One-command server hardening** — deploys a full defensive security stack (Wazuh SIEM + ModSecurity WAF + DDoS protection + SOAR automation + Fail2ban) and then audits it with live attack simulations.
 
+# This readme currently for setup.sh and checksec.sh , its not about other files that gonna be added here,other security related files gonna be named and contain readme what the tool does,how it works and how to deploy. You can see other tools in folder sec-hardening-related.
 ---
 
 ## What It Does
