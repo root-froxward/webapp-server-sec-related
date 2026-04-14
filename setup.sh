@@ -94,10 +94,10 @@ detect_os() {
 detect_app_port() {
     section "App Port Detection"
 
-    # Порты которые точно не приложение
+
     SKIP_PORTS="22 25 53 111 443 1514 1515 3306 5432 6379 27017 55000"
 
-    # Собираем все слушающие TCP порты
+
     LISTENING_PORTS=()
     while IFS= read -r port; do
         skip=0
@@ -107,55 +107,52 @@ detect_app_port() {
         [[ $skip -eq 0 ]] && LISTENING_PORTS+=("$port")
     done < <(ss -tlnp 2>/dev/null | grep -oP '(?<=\*:|0\.0\.0\.0:|:::)\d+' | sort -un)
 
-    # Если APP_PORT уже задан через env — не спрашиваем
+
     if [[ "${APP_PORT_SET:-0}" == "1" ]]; then
         log "App port (from env): $APP_PORT"
         return
     fi
 
     if [[ ${#LISTENING_PORTS[@]} -eq 0 ]]; then
-        warn "Нет слушающих портов кроме системных. Используем дефолт: $APP_PORT"
+        warn "No listening ports rightnow,using default $APP_PORT"
         return
     fi
 
-    # Один порт — берём без вопросов
     if [[ ${#LISTENING_PORTS[@]} -eq 1 ]]; then
         APP_PORT="${LISTENING_PORTS[0]}"
-        log "Обнаружен один порт приложения: $APP_PORT — используем автоматически"
+        log "Detected webapp port $APP_PORT — using it automaticly"
         return
     fi
 
-    # Несколько портов — показываем список и спрашиваем один раз
     echo ""
-    echo -e "${Y}Обнаружены слушающие порты:${N}"
+    echo -e "${Y}Current ports detected:${N}"
     for i in "${!LISTENING_PORTS[@]}"; do
-        # Пытаемся определить что за сервис
         SVC=$(ss -tlnp 2>/dev/null | grep ":${LISTENING_PORTS[$i]} " | grep -oP '"[^"]*"' | head -1 | tr -d '"')
         [[ -z "$SVC" ]] && SVC="?"
         echo -e "  ${B}$((i+1))${N}) ${LISTENING_PORTS[$i]}  ${DIM}($SVC)${N}"
     done
-    echo -e "  ${B}0${N}) Ввести вручную"
+    echo -e "  ${B}0${N}) Enter manually"
     echo ""
 
     while true; do
-        read -rp "$(echo -e "${C}Выбери порт приложения [1-${#LISTENING_PORTS[@]}]: ${N}")" choice
+        read -rp "$(echo -e "${C}Pick your webapp port [1-${#LISTENING_PORTS[@]}]: ${N}")" choice
         if [[ "$choice" == "0" ]]; then
-            read -rp "$(echo -e "${C}Введи порт: ${N}")" manual_port
+            read -rp "$(echo -e "${C}Enter your port${N}")" manual_port
             if [[ "$manual_port" =~ ^[0-9]+$ ]] && (( manual_port > 0 && manual_port < 65536 )); then
                 APP_PORT="$manual_port"
                 break
             else
-                echo -e "${R}Некорректный порт.${N}"
+                echo -e "${R}Invalid port. ${N}"
             fi
         elif [[ "$choice" =~ ^[0-9]+$ ]] && (( choice >= 1 && choice <= ${#LISTENING_PORTS[@]} )); then
             APP_PORT="${LISTENING_PORTS[$((choice-1))]}"
             break
         else
-            echo -e "${R}Выбери число от 1 до ${#LISTENING_PORTS[@]}.${N}"
+            echo -e "${R}Pick a number from 1 to ${#LISTENING_PORTS[@]}.${N}"
         fi
     done
 
-    log "Порт приложения: $APP_PORT"
+    log "Webapp Port: $APP_PORT"
 }
 
 # ─── WEB SERVER DETECTION ─────────────────────────────────────────────────────
