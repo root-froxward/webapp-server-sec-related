@@ -1,0 +1,107 @@
+<!-- Wazuh Rules: MITRE ATT&CK - Reconnaissance (TA0043) -->
+<!-- Rule IDs: 101600 - 101649 -->
+<group name="mitre,reconnaissance,">
+
+  <rule id="101600" level="6">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\/robots\.txt|\/sitemap\.xml|\/crossdomain\.xml|\/clientaccesspolicy\.xml)</url>
+    <description>T1595 - Active Scanning: Reconnaissance file access (robots.txt/sitemap.xml).</description>
+    <mitre>
+      <id>T1595</id>
+    </mitre>
+    <group>mitre,reconnaissance,active_scanning,</group>
+  </rule>
+
+  <rule id="101601" level="7">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\/\.well-known\/|\/server-info|\/server-status|\/phpinfo\.php|\/info\.php)</url>
+    <description>T1595 - Active Scanning: Server information disclosure page probed.</description>
+    <mitre>
+      <id>T1595</id>
+    </mitre>
+    <group>mitre,reconnaissance,info_disclosure,</group>
+  </rule>
+
+  <rule id="101602" level="7">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\/admin\b|\/administrator\b|\/wp-admin\b|\/phpmyadmin\b|\/adminer\b|\/cpanel\b|\/webmail\b)</url>
+    <status>200|301|302</status>
+    <description>T1595 - Active Scanning: Admin panel discovery — successful or redirect.</description>
+    <mitre>
+      <id>T1595</id>
+    </mitre>
+    <group>mitre,reconnaissance,admin_panel,</group>
+  </rule>
+
+  <rule id="101603" level="8" frequency="30" timeframe="60">
+    <if_group>web|accesslog</if_group>
+    <status>404</status>
+    <same_source_ip />
+    <description>T1595.002 - Vulnerability Scanning: High rate of 404 errors — directory/file brute force.</description>
+    <mitre>
+      <id>T1595.002</id>
+    </mitre>
+    <group>mitre,reconnaissance,dir_bruteforce,</group>
+  </rule>
+
+  <rule id="101604" level="7">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\/(backup|bak|old|temp|tmp|test|dev|staging|debug|_debug)\/(|$))</url>
+    <description>T1595 - Active Scanning: Backup/test/staging directory probed.</description>
+    <mitre>
+      <id>T1595</id>
+    </mitre>
+    <group>mitre,reconnaissance,dir_discovery,</group>
+  </rule>
+
+  <rule id="101605" level="6">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\.(bak|backup|old|orig|save|swp|swo|~|copy)\b)</url>
+    <description>T1595 - Active Scanning: Backup file extension probed (.bak/.old/.swp).</description>
+    <mitre>
+      <id>T1595</id>
+    </mitre>
+    <group>mitre,reconnaissance,backup_discovery,</group>
+  </rule>
+
+  <rule id="101606" level="7">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(User-Agent:\s*(nikto|sqlmap|nmap|masscan|dirbuster|gobuster|ffuf|wfuzz|burp|zap))</url>
+    <description>T1595.002 - Vulnerability Scanning: Known scanner User-Agent detected.</description>
+    <mitre>
+      <id>T1595.002</id>
+    </mitre>
+    <group>mitre,reconnaissance,scanner_ua,</group>
+  </rule>
+
+  <rule id="101607" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\/\.env|\/config\.yml|\/docker-compose\.yml|\/Dockerfile|\/\.aws\/credentials)</url>
+    <description>T1595 - Active Scanning: Cloud/DevOps configuration file probed.</description>
+    <mitre>
+      <id>T1595</id>
+    </mitre>
+    <group>mitre,reconnaissance,config_discovery,</group>
+  </rule>
+
+  <rule id="101608" level="7">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\/api\/v\d+\/(docs|swagger|openapi|graphql|health|version|status|metrics))</url>
+    <description>T1595 - Active Scanning: API documentation/health endpoint probed.</description>
+    <mitre>
+      <id>T1595</id>
+    </mitre>
+    <group>mitre,reconnaissance,api_discovery,</group>
+  </rule>
+
+  <rule id="101609" level="10" frequency="5" timeframe="120">
+    <if_matched_group>reconnaissance</if_matched_group>
+    <same_source_ip />
+    <description>Reconnaissance: Multiple recon indicators from same IP — active target profiling.</description>
+    <mitre>
+      <id>T1595</id>
+    </mitre>
+    <group>mitre,reconnaissance,recon_burst,</group>
+  </rule>
+
+</group>

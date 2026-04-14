@@ -1,0 +1,105 @@
+<!-- Wazuh Rules: MITRE ATT&CK - Lateral Movement (TA0008) -->
+<!-- Rule IDs: 101350 - 101399 -->
+<group name="mitre,lateral_movement,">
+
+  <rule id="101350" level="8">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bssh\b\s+(-i\s+|.*@)\d+\.\d+\.\d+\.\d+)</match>
+    <description>T1021.004 - Remote Services: SSH: Outbound SSH connection to IP address.</description>
+    <mitre>
+      <id>T1021.004</id>
+    </mitre>
+    <group>mitre,lateral_movement,ssh,</group>
+  </rule>
+
+  <rule id="101351" level="8">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bsshpass\b\s+-p\s+|\bssh-copy-id\b\s+)</match>
+    <description>T1021.004 - Remote Services: SSH: sshpass or ssh-copy-id used — credential relay.</description>
+    <mitre>
+      <id>T1021.004</id>
+    </mitre>
+    <group>mitre,lateral_movement,ssh,</group>
+  </rule>
+
+  <rule id="101352" level="8">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bscp\b\s+.*@.*:|\bsftp\b\s+.*@|\brsync\b\s+.*@.*:)</match>
+    <description>T1021.004 - Remote Services: File transfer via SCP/SFTP/rsync to remote host.</description>
+    <mitre>
+      <id>T1021.004</id>
+    </mitre>
+    <group>mitre,lateral_movement,file_transfer,</group>
+  </rule>
+
+  <rule id="101353" level="9">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bpsexec\b|\bwinexe\b|\bwmiexec\b|\bsmbexec\b|\batexec\b|\bdcomexec\b)</match>
+    <description>T1021.002 - SMB/Admin Shares: Remote execution tool detected (PsExec/WMI/SMB).</description>
+    <mitre>
+      <id>T1021.002</id>
+    </mitre>
+    <group>mitre,lateral_movement,smb_exec,</group>
+  </rule>
+
+  <rule id="101354" level="8">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\brdp\b|\bxfreerdp\b|\brdesktop\b|\bmstsc\b)</match>
+    <description>T1021.001 - Remote Desktop: RDP client tool executed.</description>
+    <mitre>
+      <id>T1021.001</id>
+    </mitre>
+    <group>mitre,lateral_movement,rdp,</group>
+  </rule>
+
+  <rule id="101355" level="9">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bimpacket\b|\bsecretsdump\b|\bwmiexec\.py\b|\bsmbclient\.py\b|\batexec\.py\b)</match>
+    <description>T1021 - Remote Services: Impacket toolkit execution detected — lateral movement.</description>
+    <mitre>
+      <id>T1021</id>
+    </mitre>
+    <group>mitre,lateral_movement,impacket,</group>
+  </rule>
+
+  <rule id="101356" level="8">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bcrackmapexec\b|\bcme\b\s+(smb|winrm|ssh|mssql|ldap)|\bnetexec\b)</match>
+    <description>T1021 - Remote Services: CrackMapExec/NetExec lateral movement tool detected.</description>
+    <mitre>
+      <id>T1021</id>
+    </mitre>
+    <group>mitre,lateral_movement,crackmapexec,</group>
+  </rule>
+
+  <rule id="101357" level="8">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bsmbclient\b\s+\/\/|\bmount\b\s+-t\s+cifs|\bnet\b\s+use\b)</match>
+    <description>T1021.002 - SMB Shares: SMB/CIFS share mounting or access.</description>
+    <mitre>
+      <id>T1021.002</id>
+    </mitre>
+    <group>mitre,lateral_movement,smb_share,</group>
+  </rule>
+
+  <rule id="101358" level="9">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bevil-winrm\b|\bwinrs\b|\bpwsh\b.*New-PSSession|\bEnter-PSSession\b)</match>
+    <description>T1021.006 - Windows Remote Management: WinRM lateral movement attempt.</description>
+    <mitre>
+      <id>T1021.006</id>
+    </mitre>
+    <group>mitre,lateral_movement,winrm,</group>
+  </rule>
+
+  <rule id="101359" level="10" frequency="3" timeframe="300">
+    <if_matched_group>lateral_movement</if_matched_group>
+    <same_source_ip />
+    <description>Lateral Movement: Multiple lateral movement techniques from same source — active propagation.</description>
+    <mitre>
+      <id>T1021</id>
+    </mitre>
+    <group>mitre,lateral_movement,propagation,</group>
+  </rule>
+
+</group>

@@ -1,0 +1,135 @@
+<!-- Wazuh Rules: MITRE ATT&CK - Defense Evasion (TA0005) -->
+<!-- Rule IDs: 101200 - 101249 -->
+<group name="mitre,defense_evasion,">
+
+  <rule id="101200" level="12">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\brm\b\s+(-rf?\s+)?\/var\/log\/|truncate\s+.*\/var\/log\/|echo\s*>\s*\/var\/log\/)</match>
+    <description>T1070.002 - Clear Linux Logs: Log file deletion or truncation detected.</description>
+    <mitre>
+      <id>T1070.002</id>
+    </mitre>
+    <group>mitre,defense_evasion,clear_logs,</group>
+  </rule>
+
+  <rule id="101201" level="10">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bsystemctl\b\s+(stop|disable)\s+(rsyslog|syslog|auditd|wazuh-agent|ossec))</match>
+    <description>T1562.001 - Disable or Modify Tools: Security/logging service stopped or disabled.</description>
+    <mitre>
+      <id>T1562.001</id>
+    </mitre>
+    <group>mitre,defense_evasion,disable_security,</group>
+  </rule>
+
+  <rule id="101202" level="12">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bservice\b\s+(auditd|wazuh-agent|ossec|fail2ban|snort|suricata)\s+stop)</match>
+    <description>T1562.001 - Disable or Modify Tools: IDS/IPS or HIDS agent stopped.</description>
+    <mitre>
+      <id>T1562.001</id>
+    </mitre>
+    <group>mitre,defense_evasion,disable_security,</group>
+  </rule>
+
+  <rule id="101203" level="10">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\biptables\b\s+(-F|-X|--flush|--delete-chain)|\bnft\b\s+flush\s+ruleset)</match>
+    <description>T1562.004 - Disable or Modify Firewall: Firewall rules flushed or deleted.</description>
+    <mitre>
+      <id>T1562.004</id>
+    </mitre>
+    <group>mitre,defense_evasion,disable_firewall,</group>
+  </rule>
+
+  <rule id="101204" level="10">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bufw\b\s+disable|\bfirewalld\b.*stop|\bsetenforce\b\s+0)</match>
+    <description>T1562.004 - Disable Security: UFW/firewalld disabled or SELinux set to permissive.</description>
+    <mitre>
+      <id>T1562.004</id>
+    </mitre>
+    <group>mitre,defense_evasion,disable_firewall,</group>
+  </rule>
+
+  <rule id="101205" level="10">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bhistory\b\s+-c|\bunset\b\s+HISTFILE|\bexport\b\s+HISTSIZE=0|\bshred\b\s+.*\.bash_history)</match>
+    <description>T1070.003 - Clear Command History: Shell history cleared or logging disabled.</description>
+    <mitre>
+      <id>T1070.003</id>
+    </mitre>
+    <group>mitre,defense_evasion,clear_history,</group>
+  </rule>
+
+  <rule id="101206" level="10">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\btouch\b\s+-[amdrt]\s+.*\d{12}|\btimestomp\b)</match>
+    <description>T1070.006 - Timestomp: File timestamp manipulation detected.</description>
+    <mitre>
+      <id>T1070.006</id>
+    </mitre>
+    <group>mitre,defense_evasion,timestomp,</group>
+  </rule>
+
+  <rule id="101207" level="9">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bbase64\b\s+(-d|--decode)|\bopenssl\b\s+(enc|base64)|\bxxd\b\s+-r)</match>
+    <description>T1140 - Deobfuscate/Decode: Payload decoding via base64/openssl/xxd.</description>
+    <mitre>
+      <id>T1140</id>
+    </mitre>
+    <group>mitre,defense_evasion,decode_payload,</group>
+  </rule>
+
+  <rule id="101208" level="10">
+    <if_group>syscheck</if_group>
+    <field name="file" type="pcre2">(?i)(\/etc\/hosts$|\/etc\/resolv\.conf$)</field>
+    <description>T1565.001 - Stored Data Manipulation: DNS configuration file modified.</description>
+    <mitre>
+      <id>T1565.001</id>
+    </mitre>
+    <group>mitre,defense_evasion,dns_hijack,</group>
+  </rule>
+
+  <rule id="101209" level="10">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\brm\b\s+(-rf?\s+)?.*\.(log|audit|pcap|evt|evtx))</match>
+    <description>T1070 - Indicator Removal: Security evidence files being deleted.</description>
+    <mitre>
+      <id>T1070</id>
+    </mitre>
+    <group>mitre,defense_evasion,evidence_removal,</group>
+  </rule>
+
+  <rule id="101210" level="9">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bLD_PRELOAD\b=|\/etc\/ld\.so\.preload\b)</match>
+    <description>T1574.006 - Hijack Execution: LD_PRELOAD environment variable set — library injection.</description>
+    <mitre>
+      <id>T1574.006</id>
+    </mitre>
+    <group>mitre,defense_evasion,ld_preload,</group>
+  </rule>
+
+  <rule id="101211" level="10">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bauditctl\b\s+(-D|-e\s+0|--reset)|\bkillall\b\s+auditd)</match>
+    <description>T1562.001 - Disable Audit: Audit daemon killed or rules cleared.</description>
+    <mitre>
+      <id>T1562.001</id>
+    </mitre>
+    <group>mitre,defense_evasion,disable_audit,</group>
+  </rule>
+
+  <rule id="101212" level="9">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bmount\b\s+--bind\s+\/dev\/null\s+\/var\/log|\bmount\b\s+-o\s+remount.*nosuid)</match>
+    <description>T1562 - Impair Defenses: Log directory bind-mounted to /dev/null.</description>
+    <mitre>
+      <id>T1562</id>
+    </mitre>
+    <group>mitre,defense_evasion,log_suppression,</group>
+  </rule>
+
+</group>

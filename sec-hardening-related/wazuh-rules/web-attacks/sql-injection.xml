@@ -1,0 +1,124 @@
+<!-- Wazuh Rules: SQL Injection Detection -->
+<!-- Rule IDs: 100100 - 100119 -->
+<group name="web,attack,sql_injection,">
+
+  <rule id="100100" level="6">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\bunion\b.*\bselect\b|\bselect\b.*\bfrom\b.*\bwhere\b)</url>
+    <description>SQL Injection: UNION SELECT or SELECT FROM WHERE pattern detected in URL.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,sql_injection,pci_dss_6.5.1,gdpr_IV_35.7.d,nist_800_53_SI.10,</group>
+  </rule>
+
+  <rule id="100101" level="6">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)((\%27)|('))\s*((\%6F)|o|(\%4F))((\%72)|r|(\%52))</url>
+    <description>SQL Injection: OR-based injection attempt via encoded characters.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,sql_injection,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100102" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\bexec\b|\bexecute\b)\s*((\bsp_|\bxp_))</url>
+    <description>SQL Injection: Stored procedure execution attempt (sp_/xp_).</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,sql_injection,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100103" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\bdrop\b\s+\btable\b|\btruncate\b\s+\btable\b|\balter\b\s+\btable\b)</url>
+    <description>SQL Injection: Destructive DDL statement detected (DROP/TRUNCATE/ALTER TABLE).</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,sql_injection,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100104" level="6">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\binformation_schema\b|\bsys\.|\bmysql\.user\b|\bpg_catalog\b)</url>
+    <description>SQL Injection: Database metadata enumeration attempt.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,sql_injection,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100105" level="6">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\bsleep\s*\(|\bbenchmark\s*\(|\bwaitfor\b\s+\bdelay\b)</url>
+    <description>SQL Injection: Time-based blind injection attempt (SLEEP/BENCHMARK/WAITFOR).</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,sql_injection,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100106" level="7">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\bload_file\s*\(|\binto\s+outfile\b|\binto\s+dumpfile\b)</url>
+    <description>SQL Injection: File read/write attempt via SQL (LOAD_FILE/INTO OUTFILE).</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,sql_injection,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100107" level="10">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\b(having|group\s+by)\b.*(\bcount\b|\bsum\b|\bavg\b))</url>
+    <description>SQL Injection: Error-based injection via HAVING/GROUP BY with aggregate.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,sql_injection,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100108" level="6">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)((\%23)|(--)|(\%2D\%2D))\s*$</url>
+    <description>SQL Injection: SQL comment terminator detected at end of parameter.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,sql_injection,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100109" level="12" frequency="8" timeframe="60">
+    <if_matched_group>sql_injection</if_matched_group>
+    <description>SQL Injection: Repeated SQLi attempts — likely automated scanner or attack.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,sql_injection,pci_dss_6.5.1,pci_dss_11.4,</group>
+  </rule>
+
+  <rule id="100110" level="7">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\bcast\s*\(.*\bas\b|\bconvert\s*\()</url>
+    <description>SQL Injection: CAST/CONVERT type coercion detected in URL.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,sql_injection,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100111" level="7">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\bchar\s*\(|\bconcat\s*\(|\bconcat_ws\s*\(|\bgroup_concat\s*\()</url>
+    <description>SQL Injection: String function abuse detected (CHAR/CONCAT/GROUP_CONCAT).</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,sql_injection,pci_dss_6.5.1,</group>
+  </rule>
+
+</group>

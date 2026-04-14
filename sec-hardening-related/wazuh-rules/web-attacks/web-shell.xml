@@ -1,0 +1,95 @@
+<!-- Wazuh Rules: Web Shell Detection -->
+<!-- Rule IDs: 100290 - 100309 -->
+<group name="web,attack,web_shell,">
+
+  <rule id="100290" level="10">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(c99\.php|r57\.php|wso\.php|b374k|weevely|alfa\.php|adminer\.php)</url>
+    <description>Web Shell: Known web shell filename detected in URL.</description>
+    <mitre>
+      <id>T1505.003</id>
+    </mitre>
+    <group>web,attack,web_shell,pci_dss_6.5.1,pci_dss_11.4,</group>
+  </rule>
+
+  <rule id="100291" level="9">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\bcmd\s*=|\bexec\s*=|\bcommand\s*=|\bshell\s*=|\baction\s*=cmd)</url>
+    <description>Web Shell: Command parameter pattern detected — potential shell interaction.</description>
+    <mitre>
+      <id>T1505.003</id>
+    </mitre>
+    <group>web,attack,web_shell,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100292" level="10">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\beval\s*\(\s*\$_(GET|POST|REQUEST|COOKIE)|\bsystem\s*\(\s*\$_(GET|POST|REQUEST))</url>
+    <description>Web Shell: PHP shell code pattern (eval/system with superglobal).</description>
+    <mitre>
+      <id>T1505.003</id>
+    </mitre>
+    <group>web,attack,web_shell,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100293" level="9">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\bpassthru\s*\(|\bshell_exec\s*\(|\bpopen\s*\(|\bproc_open\s*\()</url>
+    <description>Web Shell: PHP dangerous function call detected in URL.</description>
+    <mitre>
+      <id>T1505.003</id>
+    </mitre>
+    <group>web,attack,web_shell,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100294" level="10">
+    <if_group>syscheck</if_group>
+    <field name="file" type="pcre2">(?i)(\.(php|asp|aspx|jsp|jspx|cgi|pl)\s*$)</field>
+    <field name="uname">www-data|apache|nginx|httpd|nobody</field>
+    <description>Web Shell: New server-side script created by web server user — potential web shell upload.</description>
+    <mitre>
+      <id>T1505.003</id>
+    </mitre>
+    <group>web,attack,web_shell,pci_dss_6.5.1,pci_dss_11.5,</group>
+  </rule>
+
+  <rule id="100295" level="10">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\bbase64_decode\s*\(|\bgzinflate\s*\(|\bstr_rot13\s*\(|\bgzuncompress\s*\()</url>
+    <description>Web Shell: Obfuscation function detected — encoded shell payload likely.</description>
+    <mitre>
+      <id>T1505.003</id>
+    </mitre>
+    <group>web,attack,web_shell,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100296" level="9">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\/uploads?\/[^/]*\.(php|asp|aspx|jsp|cgi)|\/images?\/[^/]*\.(php|asp|aspx))</url>
+    <description>Web Shell: Server-side script accessed from upload/images directory.</description>
+    <mitre>
+      <id>T1505.003</id>
+    </mitre>
+    <group>web,attack,web_shell,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100297" level="9">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\.php\.(jpg|png|gif|bmp|txt)|\.asp\.(jpg|png)|\.jsp\.(jpg|png))</url>
+    <description>Web Shell: Double extension detected — disguised script file.</description>
+    <mitre>
+      <id>T1505.003</id>
+    </mitre>
+    <group>web,attack,web_shell,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100298" level="14" frequency="3" timeframe="120">
+    <if_matched_group>web_shell</if_matched_group>
+    <description>Web Shell: Multiple web shell indicators — active compromise likely.</description>
+    <mitre>
+      <id>T1505.003</id>
+    </mitre>
+    <group>web,attack,web_shell,pci_dss_6.5.1,pci_dss_11.4,</group>
+  </rule>
+
+</group>

@@ -1,0 +1,105 @@
+<!-- Wazuh Rules: WordPress-Specific Attack Detection -->
+<!-- Rule IDs: 100480 - 100499 -->
+<group name="web,attack,wordpress_attacks,">
+
+  <rule id="100480" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\/wp-content\/plugins\/.*\.(php|phtml)(\?|$))</url>
+    <description>WordPress: Direct PHP execution in plugins directory — potential exploit.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,wordpress_attacks,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100481" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\/wp-content\/uploads\/.*\.(php[3-8]?|phtml|phar))</url>
+    <description>WordPress: PHP file in uploads directory — web shell likely.</description>
+    <mitre>
+      <id>T1505.003</id>
+    </mitre>
+    <group>web,attack,wordpress_attacks,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100482" level="7">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\/xmlrpc\.php\b.*methodName.*(wp\.getUsersBlogs|system\.multicall|pingback\.ping))</url>
+    <description>WordPress: XML-RPC abuse — brute force or DDoS amplification via xmlrpc.php.</description>
+    <mitre>
+      <id>T1110</id>
+    </mitre>
+    <group>web,attack,wordpress_attacks,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100483" level="12" frequency="15" timeframe="60">
+    <if_matched_sid>100482</if_matched_sid>
+    <same_source_ip />
+    <description>WordPress: Aggressive XML-RPC brute force — automated attack.</description>
+    <mitre>
+      <id>T1110</id>
+    </mitre>
+    <group>web,attack,wordpress_attacks,pci_dss_6.5.1,pci_dss_11.4,</group>
+  </rule>
+
+  <rule id="100484" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\/wp-json\/wp\/v2\/users\b|\/\?rest_route=\/wp\/v2\/users)</url>
+    <description>WordPress: REST API user enumeration attempt.</description>
+    <mitre>
+      <id>T1087</id>
+    </mitre>
+    <group>web,attack,wordpress_attacks,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100485" level="6">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\/\?author=\d+|\/wp-json\/.*\/users\/\d+)</url>
+    <description>WordPress: Author ID enumeration via URL parameter.</description>
+    <mitre>
+      <id>T1087</id>
+    </mitre>
+    <group>web,attack,wordpress_attacks,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100486" level="9">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\/wp-admin\/(admin-ajax|admin-post)\.php\?action=(revslider|showbiz|uploadify))</url>
+    <description>WordPress: Known vulnerable plugin AJAX action exploit attempt.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,wordpress_attacks,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100487" level="7">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\/wp-config\.php\.bak|\/wp-config\.php\.old|\/wp-config\.php\.save|\/wp-config\.txt)</url>
+    <description>WordPress: wp-config backup file access — credential disclosure attempt.</description>
+    <mitre>
+      <id>T1552</id>
+    </mitre>
+    <group>web,attack,wordpress_attacks,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100488" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\/wp-includes\/(wp-db|class-wp|version)\.php\?)</url>
+    <description>WordPress: Direct wp-includes core file access with parameters — exploitation attempt.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,wordpress_attacks,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100489" level="10" frequency="10" timeframe="60">
+    <if_matched_group>wordpress_attacks</if_matched_group>
+    <same_source_ip />
+    <description>WordPress: Repeated WordPress-targeted attacks from same IP — active exploitation.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,wordpress_attacks,pci_dss_6.5.1,pci_dss_11.4,</group>
+  </rule>
+
+</group>

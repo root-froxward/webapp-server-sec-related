@@ -1,0 +1,134 @@
+<!-- Wazuh Rules: MITRE ATT&CK - Impact (TA0040) -->
+<!-- Rule IDs: 101550 - 101599 -->
+<group name="mitre,impact,">
+
+  <rule id="101550" level="14">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\brm\b\s+-rf\s+\/[^. \t]|\brm\b\s+-rf\s+\/home\b|\brm\b\s+-rf\s+\/var\b|\brm\b\s+-rf\s+\/etc\b)</match>
+    <description>T1485 - Data Destruction: Recursive deletion of critical system directories.</description>
+    <mitre>
+      <id>T1485</id>
+    </mitre>
+    <group>mitre,impact,data_destruction,</group>
+  </rule>
+
+  <rule id="101551" level="14">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bdd\b\s+if=\/dev\/(zero|urandom|null)\s+of=\/dev\/(sda|vda|xvda|nvme))</match>
+    <description>T1561.001 - Disk Wipe: Disk content overwrite via dd — data destruction.</description>
+    <mitre>
+      <id>T1561.001</id>
+    </mitre>
+    <group>mitre,impact,disk_wipe,</group>
+  </rule>
+
+  <rule id="101552" level="12">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bshred\b\s+(-[fuvzn])+\s+|\bwipe\b\s+-[rfq]\s+|\bsrm\b\s+-[rz])</match>
+    <description>T1485 - Data Destruction: Secure file deletion tool used (shred/wipe/srm).</description>
+    <mitre>
+      <id>T1485</id>
+    </mitre>
+    <group>mitre,impact,data_destruction,</group>
+  </rule>
+
+  <rule id="101553" level="14">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bopenssl\b\s+enc\s+-aes.*-in\s+.*-out\s+.*\.enc|\bgpg\b\s+(-c|--symmetric)\s+.*\.(tar|zip|sql|db))</match>
+    <description>T1486 - Data Encrypted for Impact: File encryption detected — potential ransomware.</description>
+    <mitre>
+      <id>T1486</id>
+    </mitre>
+    <group>mitre,impact,ransomware,</group>
+  </rule>
+
+  <rule id="101554" level="14">
+    <if_group>syscheck</if_group>
+    <field name="file" type="pcre2">(?i)\.(encrypted|locked|crypt|enc|cry|ransom|WNCRY|cerber|locky|zepto)$</field>
+    <description>T1486 - Data Encrypted for Impact: Ransomware file extension detected.</description>
+    <mitre>
+      <id>T1486</id>
+    </mitre>
+    <group>mitre,impact,ransomware,</group>
+  </rule>
+
+  <rule id="101555" level="14" frequency="50" timeframe="60">
+    <if_group>syscheck</if_group>
+    <description>T1486 - Data Encrypted for Impact: Mass file modification — ransomware behavior.</description>
+    <mitre>
+      <id>T1486</id>
+    </mitre>
+    <group>mitre,impact,ransomware,</group>
+  </rule>
+
+  <rule id="101556" level="12">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bkillall\b\s+(mysqld|postgres|mongod|redis-server|httpd|nginx|apache2))</match>
+    <description>T1489 - Service Stop: Critical service forcefully killed.</description>
+    <mitre>
+      <id>T1489</id>
+    </mitre>
+    <group>mitre,impact,service_stop,</group>
+  </rule>
+
+  <rule id="101557" level="12">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bsystemctl\b\s+(stop|disable)\s+(mysql|postgresql|mongod|redis|httpd|nginx|docker))</match>
+    <description>T1489 - Service Stop: Critical infrastructure service stopped/disabled.</description>
+    <mitre>
+      <id>T1489</id>
+    </mitre>
+    <group>mitre,impact,service_stop,</group>
+  </rule>
+
+  <rule id="101558" level="14">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bmkfs\b\s+\/dev\/|\bfdisk\b\s+\/dev\/.*-d|\bparted\b\s+.*rm\s+\d+)</match>
+    <description>T1561 - Disk Wipe: Filesystem format or partition deletion detected.</description>
+    <mitre>
+      <id>T1561</id>
+    </mitre>
+    <group>mitre,impact,disk_wipe,</group>
+  </rule>
+
+  <rule id="101559" level="10">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\b(stress|stress-ng|hping3)\b.*--flood|\bfork\s*bomb\b|:\(\)\{\s*:\|:&\s*\};:)</match>
+    <description>T1499 - Endpoint DoS: Resource exhaustion or fork bomb detected.</description>
+    <mitre>
+      <id>T1499</id>
+    </mitre>
+    <group>mitre,impact,dos,</group>
+  </rule>
+
+  <rule id="101560" level="12">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(kernel:.*Out\s+of\s+memory:\s+Kill\s+process|kernel:.*oom-killer)</match>
+    <description>T1499 - Endpoint DoS: OOM killer triggered — resource exhaustion attack.</description>
+    <mitre>
+      <id>T1499</id>
+    </mitre>
+    <group>mitre,impact,dos,oom,</group>
+  </rule>
+
+  <rule id="101561" level="10">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bcryptominer\b|\bxmrig\b|\bminerd\b|\bstratum\+tcp:\/\/|\bcpuminer\b)</match>
+    <description>T1496 - Resource Hijacking: Cryptocurrency miner detected.</description>
+    <mitre>
+      <id>T1496</id>
+    </mitre>
+    <group>mitre,impact,cryptominer,</group>
+  </rule>
+
+  <rule id="101562" level="12">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bwall\b\s+.*ransom|\bwall\b\s+.*bitcoin|\bwall\b\s+.*pay\s+\d+)</match>
+    <description>T1491 - Defacement: Ransom message broadcast to system users via wall.</description>
+    <mitre>
+      <id>T1491</id>
+    </mitre>
+    <group>mitre,impact,defacement,</group>
+  </rule>
+
+</group>

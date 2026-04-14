@@ -1,0 +1,104 @@
+<!-- Wazuh Rules: OS Command Injection Detection -->
+<!-- Rule IDs: 100160 - 100179 -->
+<group name="web,attack,command_injection,">
+
+  <rule id="100160" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\|\s*(cat|ls|id|whoami|uname|pwd|ifconfig|ip\s+a))</url>
+    <description>Command Injection: Pipe to recon command detected in URL.</description>
+    <mitre>
+      <id>T1059</id>
+    </mitre>
+    <group>web,attack,command_injection,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100161" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(;\s*(cat|ls|id|whoami|uname|wget|curl|nc|bash|sh)\b)</url>
+    <description>Command Injection: Semicolon chained command detected in URL.</description>
+    <mitre>
+      <id>T1059</id>
+    </mitre>
+    <group>web,attack,command_injection,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100162" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(`[^`]*`|\$\([^)]*\))</url>
+    <description>Command Injection: Backtick or $() command substitution detected.</description>
+    <mitre>
+      <id>T1059</id>
+    </mitre>
+    <group>web,attack,command_injection,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100163" level="9">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\b(wget|curl|fetch)\b\s+https?:\/\/)</url>
+    <description>Command Injection: Remote file download attempt via wget/curl.</description>
+    <mitre>
+      <id>T1059</id>
+    </mitre>
+    <group>web,attack,command_injection,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100164" level="10">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\b(nc|ncat|netcat)\b\s+-[elp]|\bsocat\b\s+TCP)</url>
+    <description>Command Injection: Reverse shell attempt via netcat/socat.</description>
+    <mitre>
+      <id>T1059</id>
+    </mitre>
+    <group>web,attack,command_injection,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100165" level="10">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\bbash\s+-i\s+>&|\/dev\/tcp\/|\bmkfifo\b.*\bnc\b)</url>
+    <description>Command Injection: Bash reverse shell pattern detected.</description>
+    <mitre>
+      <id>T1059</id>
+    </mitre>
+    <group>web,attack,command_injection,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100166" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\bpython\b\s+-c\s+|\bperl\b\s+-e\s+|\bruby\b\s+-e\s+)</url>
+    <description>Command Injection: Scripting language one-liner execution attempt.</description>
+    <mitre>
+      <id>T1059</id>
+    </mitre>
+    <group>web,attack,command_injection,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100167" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(&&\s*(cat|ls|id|whoami|wget|curl|rm|chmod|chown)\b)</url>
+    <description>Command Injection: AND-chained command detected.</description>
+    <mitre>
+      <id>T1059</id>
+    </mitre>
+    <group>web,attack,command_injection,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100168" level="9">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\bchmod\b\s+[0-7]{3,4}\b|\bchown\b\s+\w+:\w+)</url>
+    <description>Command Injection: File permission change attempt (chmod/chown).</description>
+    <mitre>
+      <id>T1059</id>
+    </mitre>
+    <group>web,attack,command_injection,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100169" level="12" frequency="6" timeframe="60">
+    <if_matched_group>command_injection</if_matched_group>
+    <description>Command Injection: Repeated OS command injection attempts detected.</description>
+    <mitre>
+      <id>T1059</id>
+    </mitre>
+    <group>web,attack,command_injection,pci_dss_6.5.1,pci_dss_11.4,</group>
+  </rule>
+
+</group>

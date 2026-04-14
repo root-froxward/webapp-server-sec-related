@@ -1,0 +1,84 @@
+<!-- Wazuh Rules: XML External Entity (XXE) Detection -->
+<!-- Rule IDs: 100200 - 100219 -->
+<group name="web,attack,xxe,">
+
+  <rule id="100200" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\<!DOCTYPE\b[^>]*\bENTITY\b|\<!ENTITY\b)</url>
+    <description>XXE: DOCTYPE ENTITY declaration detected in request.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,xxe,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100201" level="9">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\bSYSTEM\b\s+["'](file|https?|ftp|php|expect|data):\/\/)</url>
+    <description>XXE: SYSTEM entity with external URI — file read or SSRF attempt.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,xxe,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100202" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\bPUBLIC\b\s+["'][^"']*["']\s+["'](https?|ftp):\/\/)</url>
+    <description>XXE: PUBLIC entity with external DTD reference detected.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,xxe,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100203" level="9">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(ENTITY\s+%\s+\w+\s+SYSTEM)</url>
+    <description>XXE: Parameter entity (%) declaration — blind XXE / out-of-band exfiltration vector.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,xxe,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100204" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\<\?xml\b[^>]*\?>.*\<!DOCTYPE\b)</url>
+    <description>XXE: XML declaration followed by DOCTYPE — potential XXE payload.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,xxe,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100205" level="9">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(ENTITY\b[^>]*\/etc\/passwd|ENTITY\b[^>]*file:\/\/)</url>
+    <description>XXE: Entity referencing /etc/passwd or file:// — direct file read attempt.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,xxe,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100206" level="10">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(ENTITY\b[^>]*expect:\/\/|ENTITY\b[^>]*php:\/\/filter)</url>
+    <description>XXE: Entity with command execution or PHP filter wrapper.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,xxe,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100207" level="12" frequency="5" timeframe="60">
+    <if_matched_group>xxe</if_matched_group>
+    <description>XXE: Repeated XXE injection attempts detected — likely automated attack.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,xxe,pci_dss_6.5.1,pci_dss_11.4,</group>
+  </rule>
+
+</group>

@@ -1,0 +1,58 @@
+<!-- Wazuh Rules: Insecure Direct Object Reference (IDOR) Detection -->
+<!-- Rule IDs: 100400 - 100419 -->
+<group name="web,attack,idor,">
+
+  <rule id="100400" level="6">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\/users?\/\d+\/(profile|settings|documents|orders|invoices))</url>
+    <status>200</status>
+    <description>IDOR: Direct access to user resource by numeric ID — verify authorization.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,idor,pci_dss_6.5.8,</group>
+  </rule>
+
+  <rule id="100401" level="10" frequency="20" timeframe="30">
+    <if_matched_sid>100400</if_matched_sid>
+    <same_source_ip />
+    <description>IDOR: Rapid sequential user ID enumeration — automated IDOR exploitation.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,idor,pci_dss_6.5.8,pci_dss_11.4,</group>
+  </rule>
+
+  <rule id="100402" level="7">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\/api\/.*\/(download|export|attachment|file)\/\d+)</url>
+    <status>200</status>
+    <description>IDOR: File/attachment access via sequential numeric ID.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,idor,pci_dss_6.5.8,</group>
+  </rule>
+
+  <rule id="100403" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\/api\/.*\/(order|invoice|receipt|ticket)\/\d+)</url>
+    <status>200</status>
+    <description>IDOR: Financial/transactional record access by sequential ID.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,idor,pci_dss_6.5.8,</group>
+  </rule>
+
+  <rule id="100404" level="12" frequency="30" timeframe="60">
+    <if_matched_sid>100402</if_matched_sid>
+    <same_source_ip />
+    <description>IDOR: Mass file/document enumeration — data exfiltration attempt.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,idor,pci_dss_6.5.8,pci_dss_11.4,</group>
+  </rule>
+
+</group>

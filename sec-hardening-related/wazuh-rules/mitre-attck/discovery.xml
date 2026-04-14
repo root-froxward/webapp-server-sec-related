@@ -1,0 +1,125 @@
+<!-- Wazuh Rules: MITRE ATT&CK - Discovery (TA0007) -->
+<!-- Rule IDs: 101300 - 101349 -->
+<group name="mitre,discovery,">
+
+  <rule id="101300" level="6">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\buname\b\s+-a|\bcat\b\s+\/etc\/(os-release|lsb-release|redhat-release)|\bhostnamectl\b)</match>
+    <description>T1082 - System Information Discovery: OS/kernel version enumeration.</description>
+    <mitre>
+      <id>T1082</id>
+    </mitre>
+    <group>mitre,discovery,system_info,</group>
+  </rule>
+
+  <rule id="101301" level="6">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bifconfig\b|\bip\s+(addr|link|route)\b|\bnetstat\b\s+-[antlpu]|\bss\b\s+-[antlpu])</match>
+    <description>T1016 - System Network Configuration: Network configuration enumeration.</description>
+    <mitre>
+      <id>T1016</id>
+    </mitre>
+    <group>mitre,discovery,network_config,</group>
+  </rule>
+
+  <rule id="101302" level="7">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\barp\b\s+-[an]|\bip\s+neigh\b|\bnmap\b\s+-s[PpnT]|\bnetdiscover\b)</match>
+    <description>T1018 - Remote System Discovery: Network host/neighbor enumeration.</description>
+    <mitre>
+      <id>T1018</id>
+    </mitre>
+    <group>mitre,discovery,remote_system,</group>
+  </rule>
+
+  <rule id="101303" level="8">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bnmap\b\s+(-sV|-sC|-A|--script|--version-all|-O)\s+)</match>
+    <description>T1046 - Network Service Discovery: Aggressive nmap scan with service/version detection.</description>
+    <mitre>
+      <id>T1046</id>
+    </mitre>
+    <group>mitre,discovery,network_scan,</group>
+  </rule>
+
+  <rule id="101304" level="6">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bwho\b|\bw\b\s*$|\blast\b|\blastlog\b|\busers\b\s*$|\bwhoami\b|\bid\b\s*$)</match>
+    <description>T1033 - System Owner/User Discovery: User enumeration commands executed.</description>
+    <mitre>
+      <id>T1033</id>
+    </mitre>
+    <group>mitre,discovery,user_discovery,</group>
+  </rule>
+
+  <rule id="101305" level="7">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bcat\b\s+\/etc\/(passwd|group|sudoers)|\bgetent\b\s+(passwd|group))</match>
+    <description>T1087.001 - Account Discovery: Local account/group enumeration.</description>
+    <mitre>
+      <id>T1087.001</id>
+    </mitre>
+    <group>mitre,discovery,account_discovery,</group>
+  </rule>
+
+  <rule id="101306" level="6">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bps\b\s+(aux|ef|axo)|\btop\b\s*$|\bpstree\b|\bhtop\b)</match>
+    <description>T1057 - Process Discovery: Process listing command executed.</description>
+    <mitre>
+      <id>T1057</id>
+    </mitre>
+    <group>mitre,discovery,process_discovery,</group>
+  </rule>
+
+  <rule id="101307" level="6">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bdf\b\s+-[hT]|\blsblk\b|\bfdisk\b\s+-l|\bmount\b\s*$|\bfindmnt\b)</match>
+    <description>T1082 - System Information Discovery: Disk/mount enumeration.</description>
+    <mitre>
+      <id>T1082</id>
+    </mitre>
+    <group>mitre,discovery,disk_discovery,</group>
+  </rule>
+
+  <rule id="101308" level="7">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bfind\b\s+\/\s+.*-name\s+.*\.(conf|cfg|key|pem|db|sql|bak))</match>
+    <description>T1083 - File and Directory Discovery: Broad filesystem search for sensitive files.</description>
+    <mitre>
+      <id>T1083</id>
+    </mitre>
+    <group>mitre,discovery,file_discovery,</group>
+  </rule>
+
+  <rule id="101309" level="7">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bdpkg\b\s+-l|\brpm\b\s+-qa|\bapt\b\s+list\s+--installed|\bsnap\b\s+list)</match>
+    <description>T1518 - Software Discovery: Installed packages enumeration.</description>
+    <mitre>
+      <id>T1518</id>
+    </mitre>
+    <group>mitre,discovery,software_discovery,</group>
+  </rule>
+
+  <rule id="101310" level="12" frequency="8" timeframe="120">
+    <if_matched_group>discovery</if_matched_group>
+    <same_source_ip />
+    <description>Discovery: Multiple reconnaissance commands in rapid succession — post-exploitation enumeration.</description>
+    <mitre>
+      <id>T1082</id>
+    </mitre>
+    <group>mitre,discovery,recon_burst,</group>
+  </rule>
+
+  <rule id="101311" level="7">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bdig\b\s+(axfr|any)|\bnslookup\b\s+-type=(any|axfr)|\bdnsrecon\b|\bdnsenum\b)</match>
+    <description>T1018 - Remote System Discovery: DNS zone transfer or enumeration attempt.</description>
+    <mitre>
+      <id>T1018</id>
+    </mitre>
+    <group>mitre,discovery,dns_enum,</group>
+  </rule>
+
+</group>

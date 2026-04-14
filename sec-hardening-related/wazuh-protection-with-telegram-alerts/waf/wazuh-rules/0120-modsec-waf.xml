@@ -1,0 +1,160 @@
+<group name="modsecurity,waf,web_attack,">
+
+  <!-- Base ModSecurity alert -->
+  <rule id="120100" level="7">
+    <decoded_as>modsecurity</decoded_as>
+    <description>ModSecurity alert triggered</description>
+    <group>modsec,waf,</group>
+  </rule>
+
+  <!-- CRS anomaly score exceeded -->
+  <rule id="120101" level="12">
+    <if_sid>120100</if_sid>
+    <match>Inbound Anomaly Score Exceeded</match>
+    <description>OWASP CRS: Inbound anomaly score exceeded — request blocked</description>
+    <group>modsec,crs,anomaly,waf,</group>
+    <mitre><id>T1190</id></mitre>
+  </rule>
+
+  <!-- SQLi via CRS -->
+  <rule id="120110" level="12">
+    <if_sid>120100</if_sid>
+    <match>SQL Injection|sqli|942</match>
+    <description>ModSec/CRS: SQL injection detected</description>
+    <group>modsec,crs,sqli,waf,</group>
+    <mitre><id>T1190</id></mitre>
+  </rule>
+
+  <!-- XSS via CRS -->
+  <rule id="120111" level="11">
+    <if_sid>120100</if_sid>
+    <match>XSS|Cross-Site Scripting|941</match>
+    <description>ModSec/CRS: XSS detected</description>
+    <group>modsec,crs,xss,waf,</group>
+    <mitre><id>T1059.007</id></mitre>
+  </rule>
+
+  <!-- RCE via CRS -->
+  <rule id="120112" level="14">
+    <if_sid>120100</if_sid>
+    <match>Remote Code Execution|RCE|OS Command|932</match>
+    <description>ModSec/CRS: Command injection / RCE blocked</description>
+    <group>modsec,crs,rce,waf,critical,</group>
+    <mitre><id>T1059</id></mitre>
+  </rule>
+
+  <!-- LFI/RFI via CRS -->
+  <rule id="120113" level="12">
+    <if_sid>120100</if_sid>
+    <match>Local File Inclusion|Remote File Inclusion|LFI|RFI|930</match>
+    <description>ModSec/CRS: LFI/RFI attempt blocked</description>
+    <group>modsec,crs,lfi,rfi,waf,</group>
+    <mitre><id>T1083</id></mitre>
+  </rule>
+
+  <!-- Scanner detected via CRS -->
+  <rule id="120114" level="10">
+    <if_sid>120100</if_sid>
+    <match>913</match>
+    <description>ModSec/CRS: Scanner/bot detected</description>
+    <group>modsec,crs,scanner,waf,</group>
+    <mitre><id>T1595</id></mitre>
+  </rule>
+
+  <!-- Protocol violation -->
+  <rule id="120115" level="10">
+    <if_sid>120100</if_sid>
+    <match>920|Protocol Violation|Protocol Anomaly</match>
+    <description>ModSec/CRS: HTTP protocol violation</description>
+    <group>modsec,crs,protocol,waf,</group>
+  </rule>
+
+  <!-- Session fixation -->
+  <rule id="120116" level="12">
+    <if_sid>120100</if_sid>
+    <match>943|Session Fixation</match>
+    <description>ModSec/CRS: Session fixation attempt</description>
+    <group>modsec,crs,session,waf,</group>
+    <mitre><id>T1550</id></mitre>
+  </rule>
+
+  <!-- Java/Log4j via CRS -->
+  <rule id="120117" level="15">
+    <if_sid>120100</if_sid>
+    <match>944|Java|jndi|Log4j</match>
+    <description>ModSec/CRS: Java/Log4j attack blocked</description>
+    <group>modsec,crs,rce,log4shell,waf,critical,</group>
+    <mitre><id>T1190</id><id>T1059</id></mitre>
+  </rule>
+
+  <!-- Data leakage (outbound) -->
+  <rule id="120118" level="11">
+    <if_sid>120100</if_sid>
+    <match>950|951|952|953|954|Data Leakage</match>
+    <description>ModSec/CRS: Possible data leakage in response</description>
+    <group>modsec,crs,data_leak,waf,</group>
+    <mitre><id>T1005</id></mitre>
+  </rule>
+
+  <!-- Repeated CRS blocks from same IP -->
+  <rule id="120130" level="14">
+    <if_sid>120101</if_sid>
+    <same_source_ip/>
+    <timeframe>120</timeframe>
+    <frequency>5</frequency>
+    <description>Persistent WAF blocks — 5+ anomaly triggers from same IP in 2min</description>
+    <group>modsec,crs,persistent,waf,critical,</group>
+    <mitre><id>T1190</id></mitre>
+  </rule>
+
+  <!-- CrowdSec bouncer block -->
+  <rule id="120200" level="10">
+    <match>crowdsec|cs-bouncer</match>
+    <description>CrowdSec bouncer blocked a request</description>
+    <group>crowdsec,reputation,waf,</group>
+  </rule>
+
+  <!-- CrowdSec ban decision -->
+  <rule id="120201" level="12">
+    <match>crowdsec.*ban|cscli.*decisions.*add</match>
+    <description>CrowdSec issued a ban decision</description>
+    <group>crowdsec,reputation,ban,waf,</group>
+  </rule>
+
+  <!-- GeoIP block -->
+  <rule id="120300" level="8">
+    <match>geoip_blocked|GeoIP.*denied</match>
+    <description>Request blocked by GeoIP country filter</description>
+    <group>geoip,waf,</group>
+  </rule>
+
+  <!-- Rate limit triggered -->
+  <rule id="120400" level="10">
+    <decoded_as>nginx-error</decoded_as>
+    <match>limiting requests.*zone.*wazuh</match>
+    <description>Nginx rate limit triggered (wazuh zone)</description>
+    <group>rate_limit,waf,</group>
+  </rule>
+
+  <rule id="120401" level="12">
+    <if_sid>120400</if_sid>
+    <same_source_ip/>
+    <timeframe>60</timeframe>
+    <frequency>20</frequency>
+    <description>Aggressive rate limit hitting — 20+ triggers in 60s</description>
+    <group>rate_limit,waf,ddos,</group>
+    <mitre><id>T1499</id></mitre>
+  </rule>
+
+  <!-- Correlation: ModSec block + CrowdSec reputation hit from same IP -->
+  <rule id="120500" level="15">
+    <if_sid>120101,120110,120112</if_sid>
+    <if_sid>120200,120201</if_sid>
+    <same_source_ip/>
+    <timeframe>300</timeframe>
+    <description>CRITICAL: WAF block + CrowdSec reputation hit — confirmed malicious source</description>
+    <group>modsec,crowdsec,correlation,critical,</group>
+    <mitre><id>T1190</id></mitre>
+  </rule>
+
+</group>

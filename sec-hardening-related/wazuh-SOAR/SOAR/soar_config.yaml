@@ -1,0 +1,41 @@
+# ============================================================
+#  SOAR config.yaml
+#  Path: /etc/soar/config.yaml
+# ============================================================
+
+# ── Wazuh API ───────────────────────────────────────────────
+wazuh:
+  url: "https://127.0.0.1:55000"   # Wazuh Manager API endpoint
+  username: "wazuh"
+  password: "CHANGE_ME"
+  verify_ssl: false                 # set true if using valid cert
+  page_size: 500                    # alerts per API page
+  lookback_minutes: 5               # how far back on first run
+
+# ── Engine ──────────────────────────────────────────────────
+poll_interval: 15          # seconds between Wazuh API polls
+min_alert_level: 6         # ignore alerts below this Wazuh level
+dedup_ttl: 300             # seconds to suppress duplicate alerts
+
+# ── Ban Playbook ────────────────────────────────────────────
+ban:
+  enabled: true
+  min_level: 6             # minimum level to trigger a ban
+
+  # Honeypot integration:
+  #   true  → use shared ipset "honeypot-banned-ips" (requires honeypot installed)
+  #   false → use standalone ipset "soar-banned-ips"
+  use_honeypot_ipset: false
+
+# ── Telegram Notifications ──────────────────────────────────
+telegram:
+  enabled: false           # set true after filling bot_token + chat_id
+  bot_token: "CHANGE_ME"  # from @BotFather
+  chat_id: "CHANGE_ME"    # your chat/channel ID (use @userinfobot to find)
+  min_level: 6             # only notify on this level and above
+
+# ── Rule ID ranges (from your wazuh-rules repo) ─────────────
+# These are used internally by the engine for classification.
+# web-attacks:   100100 – 100999
+# mitre-attck:   101000 – 101999
+# No need to change unless you add new categories.

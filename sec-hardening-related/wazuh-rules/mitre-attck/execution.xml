@@ -1,0 +1,125 @@
+<!-- Wazuh Rules: MITRE ATT&CK - Execution (TA0002) -->
+<!-- Rule IDs: 101050 - 101099 -->
+<group name="mitre,execution,">
+
+  <rule id="101050" level="10">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bpowershell\b.*(-enc|-encodedcommand|-e\s+[A-Za-z0-9+/=]{20,}))</match>
+    <description>T1059.001 - PowerShell: Encoded command execution detected.</description>
+    <mitre>
+      <id>T1059.001</id>
+    </mitre>
+    <group>mitre,execution,powershell,</group>
+  </rule>
+
+  <rule id="101051" level="9">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bpowershell\b.*(Invoke-Expression|IEX|Invoke-WebRequest|Invoke-Mimikatz|Invoke-Shellcode))</match>
+    <description>T1059.001 - PowerShell: Suspicious cmdlet execution (IEX/Invoke-WebRequest).</description>
+    <mitre>
+      <id>T1059.001</id>
+    </mitre>
+    <group>mitre,execution,powershell,</group>
+  </rule>
+
+  <rule id="101052" level="9">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bpowershell\b.*(New-Object\s+Net\.WebClient|DownloadString|DownloadFile|System\.Net\.Sockets))</match>
+    <description>T1059.001 - PowerShell: Download cradle or socket connection attempt.</description>
+    <mitre>
+      <id>T1059.001</id>
+    </mitre>
+    <group>mitre,execution,powershell,</group>
+  </rule>
+
+  <rule id="101053" level="8">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bbash\b\s+-c\s+.*\b(curl|wget|python|perl|ruby)\b.*\|.*\b(bash|sh)\b)</match>
+    <description>T1059.004 - Unix Shell: Download-and-execute pipe pattern.</description>
+    <mitre>
+      <id>T1059.004</id>
+    </mitre>
+    <group>mitre,execution,unix_shell,</group>
+  </rule>
+
+  <rule id="101054" level="9">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bpython[23]?\b\s+-c\s+['"]import\s+(socket|subprocess|os|pty))</match>
+    <description>T1059.006 - Python: Interactive Python reverse shell or command execution.</description>
+    <mitre>
+      <id>T1059.006</id>
+    </mitre>
+    <group>mitre,execution,python,</group>
+  </rule>
+
+  <rule id="101055" level="10">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bcrontab\b\s+-[lr]|\bcrontab\b.*\b(wget|curl|bash|nc)\b)</match>
+    <description>T1053.003 - Scheduled Task/Cron: Crontab modification with download/execution command.</description>
+    <mitre>
+      <id>T1053.003</id>
+    </mitre>
+    <group>mitre,execution,scheduled_task,</group>
+  </rule>
+
+  <rule id="101056" level="8">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bat\b\s+(now|midnight|\d+:\d+).*\b(sh|bash|wget|curl|nc)\b)</match>
+    <description>T1053.002 - Scheduled Task/At: at command scheduling suspicious execution.</description>
+    <mitre>
+      <id>T1053.002</id>
+    </mitre>
+    <group>mitre,execution,scheduled_task,</group>
+  </rule>
+
+  <rule id="101057" level="10">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bmshta\b|\bregsvr32\b.*\/s.*\/i:https?|rundll32\b.*javascript:)</match>
+    <description>T1218 - System Binary Proxy Execution: LOLBin abuse (mshta/regsvr32/rundll32).</description>
+    <mitre>
+      <id>T1218</id>
+    </mitre>
+    <group>mitre,execution,lolbin,</group>
+  </rule>
+
+  <rule id="101058" level="9">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bwmic\b\s+(process\s+call\s+create|os\s+get|useraccount))</match>
+    <description>T1047 - WMI: Windows Management Instrumentation command execution.</description>
+    <mitre>
+      <id>T1047</id>
+    </mitre>
+    <group>mitre,execution,wmi,</group>
+  </rule>
+
+  <rule id="101059" level="8">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bcertutil\b.*(-urlcache|-decode|-encode)|bitsadmin\b.*\/transfer)</match>
+    <description>T1218 - System Binary Proxy Execution: certutil/bitsadmin download abuse.</description>
+    <mitre>
+      <id>T1218</id>
+    </mitre>
+    <group>mitre,execution,lolbin,</group>
+  </rule>
+
+  <rule id="101060" level="9">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bcscript\b|\bwscript\b).*\.(vbs|js|wsf|wsh)\b</match>
+    <description>T1059.005 - Visual Basic/JScript: Script host executing VBS/JS file.</description>
+    <mitre>
+      <id>T1059.005</id>
+    </mitre>
+    <group>mitre,execution,script_host,</group>
+  </rule>
+
+  <rule id="101061" level="10">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(nsupdate|rndc\s+(reload|reconfig)|named-checkconf)</match>
+    <description>T1059 - Command and Scripting Interpreter: DNS server administration command.</description>
+    <mitre>
+      <id>T1059</id>
+    </mitre>
+    <group>mitre,execution,dns_admin,</group>
+  </rule>
+
+</group>

@@ -1,0 +1,105 @@
+<!-- Wazuh Rules: MITRE ATT&CK - Command and Control (TA0011) -->
+<!-- Rule IDs: 101450 - 101499 -->
+<group name="mitre,command_and_control,">
+
+  <rule id="101450" level="10">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bnc\b\s+-[elp].*\d+|\bncat\b\s+--exec|\bsocat\b\s+TCP.*EXEC)</match>
+    <description>T1095 - Non-Application Layer Protocol: Reverse/bind shell via netcat/socat.</description>
+    <mitre>
+      <id>T1095</id>
+    </mitre>
+    <group>mitre,command_and_control,reverse_shell,</group>
+  </rule>
+
+  <rule id="101451" level="10">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bbash\b.*\/dev\/tcp\/\d+\.\d+\.\d+\.\d+\/\d+|\bmkfifo\b.*\bnc\b)</match>
+    <description>T1095 - Non-Application Layer Protocol: Bash /dev/tcp reverse shell.</description>
+    <mitre>
+      <id>T1095</id>
+    </mitre>
+    <group>mitre,command_and_control,reverse_shell,</group>
+  </rule>
+
+  <rule id="101452" level="9">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\biodine\b|\bdnscat\b|\bdns2tcp\b|\bsliver\b|\bcobalt\b)</match>
+    <description>T1071.004 - DNS Tunneling: DNS tunneling or C2 framework tool detected.</description>
+    <mitre>
+      <id>T1071.004</id>
+    </mitre>
+    <group>mitre,command_and_control,dns_tunnel,</group>
+  </rule>
+
+  <rule id="101453" level="9">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bchisel\b|\bngrok\b|\bfrp\b|\bsocat\b\s+TCP-LISTEN.*TCP:|\bplink\b\s+-R)</match>
+    <description>T1572 - Protocol Tunneling: Tunnel/proxy tool detected (chisel/ngrok/frp/socat).</description>
+    <mitre>
+      <id>T1572</id>
+    </mitre>
+    <group>mitre,command_and_control,tunneling,</group>
+  </rule>
+
+  <rule id="101454" level="9">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bssh\b\s+.*-[RLD]\s+\d+:\d+\.\d+\.\d+\.\d+:\d+|\bssh\b\s+-N\s+-f)</match>
+    <description>T1572 - Protocol Tunneling: SSH tunnel/port forwarding established.</description>
+    <mitre>
+      <id>T1572</id>
+    </mitre>
+    <group>mitre,command_and_control,ssh_tunnel,</group>
+  </rule>
+
+  <rule id="101455" level="10">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\btor\b|\bproxychains\b|\btsocks\b|\bsocksd\b|\bshadowsocks\b)</match>
+    <description>T1090.003 - Multi-hop Proxy: Tor/ProxyChains/Shadowsocks anonymization tool detected.</description>
+    <mitre>
+      <id>T1090.003</id>
+    </mitre>
+    <group>mitre,command_and_control,proxy,</group>
+  </rule>
+
+  <rule id="101456" level="9">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bcurl\b.*-H\s+.*Cookie:.*=\s*[A-Za-z0-9+/=]{50,}|\bwget\b.*--header.*Cookie:.*[A-Za-z0-9+/=]{50,})</match>
+    <description>T1071.001 - Web Protocols: Large encoded cookie in HTTP request — C2 data channel.</description>
+    <mitre>
+      <id>T1071.001</id>
+    </mitre>
+    <group>mitre,command_and_control,http_c2,</group>
+  </rule>
+
+  <rule id="101457" level="9">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bempire\b|\bcovenant\b|\bsliver\b.*generate|\bcobalt\s*strike\b|\bmetasploit\b|\bmsfvenom\b)</match>
+    <description>T1219 - Remote Access Software: Known C2 framework/RAT tool detected.</description>
+    <mitre>
+      <id>T1219</id>
+    </mitre>
+    <group>mitre,command_and_control,c2_framework,</group>
+  </rule>
+
+  <rule id="101458" level="8">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bstunnel\b|\bredsocks\b|\b3proxy\b|\bmicrosocks\b|\bsocks5\b)</match>
+    <description>T1090 - Proxy: SOCKS/stunnel proxy tool execution detected.</description>
+    <mitre>
+      <id>T1090</id>
+    </mitre>
+    <group>mitre,command_and_control,proxy,</group>
+  </rule>
+
+  <rule id="101459" level="8">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bping\b\s+-[cst]\s+.*-p\s+[0-9a-f]{16,}|\bicmpsh\b|\bicmpx\b)</match>
+    <description>T1095 - Non-Application Layer Protocol: ICMP tunnel/covert channel attempt.</description>
+    <mitre>
+      <id>T1095</id>
+    </mitre>
+    <group>mitre,command_and_control,icmp_tunnel,</group>
+  </rule>
+
+</group>

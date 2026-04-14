@@ -1,0 +1,115 @@
+<!-- Wazuh Rules: MITRE ATT&CK - Exfiltration (TA0010) -->
+<!-- Rule IDs: 101500 - 101549 -->
+<group name="mitre,exfiltration,">
+
+  <rule id="101500" level="9">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bcurl\b\s+.*-T\s+|\bcurl\b\s+.*--upload-file\s+|\bcurl\b\s+.*-d\s+@)</match>
+    <description>T1048 - Exfiltration Over Alternative Protocol: File upload via curl.</description>
+    <mitre>
+      <id>T1048</id>
+    </mitre>
+    <group>mitre,exfiltration,curl_upload,</group>
+  </rule>
+
+  <rule id="101501" level="9">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bwget\b\s+--post-file|\bcurl\b\s+-X\s+POST.*-d\s+@.*\.(sql|csv|tar|zip|gz|7z|db))</match>
+    <description>T1048 - Exfiltration Over Alternative Protocol: Data file POST upload detected.</description>
+    <mitre>
+      <id>T1048</id>
+    </mitre>
+    <group>mitre,exfiltration,http_exfil,</group>
+  </rule>
+
+  <rule id="101502" level="10">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bscp\b\s+.*\.(sql|db|csv|tar|zip|gz|bak|dump)\s+\w+@)</match>
+    <description>T1048 - Exfiltration Over Alternative Protocol: Database/archive exfiltration via SCP.</description>
+    <mitre>
+      <id>T1048</id>
+    </mitre>
+    <group>mitre,exfiltration,scp_exfil,</group>
+  </rule>
+
+  <rule id="101503" level="9">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\brclone\b\s+(copy|sync|move)\s+.*\s+(s3:|gcs:|b2:|mega:|onedrive:))</match>
+    <description>T1567.002 - Exfiltration to Cloud Storage: rclone transfer to cloud provider.</description>
+    <mitre>
+      <id>T1567.002</id>
+    </mitre>
+    <group>mitre,exfiltration,cloud_exfil,</group>
+  </rule>
+
+  <rule id="101504" level="8">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\baws\b\s+s3\s+(cp|sync|mv)\s+.*s3:\/\/|\bgsutil\b\s+(cp|rsync)\s+.*gs:\/\/)</match>
+    <description>T1567.002 - Exfiltration to Cloud Storage: AWS S3/GCS file upload.</description>
+    <mitre>
+      <id>T1567.002</id>
+    </mitre>
+    <group>mitre,exfiltration,cloud_exfil,</group>
+  </rule>
+
+  <rule id="101505" level="9">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bftp\b\s+-[niv]*\s+\d+\.\d+\.\d+\.\d+|\bncftp\b|\blftp\b\s+(-e|sftp|ftp):\/\/)</match>
+    <description>T1048.003 - Exfiltration Over Unencrypted Protocol: FTP file transfer to external IP.</description>
+    <mitre>
+      <id>T1048.003</id>
+    </mitre>
+    <group>mitre,exfiltration,ftp_exfil,</group>
+  </rule>
+
+  <rule id="101506" level="8">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bcat\b\s+.*\|\s*\bnc\b\s+\d+\.\d+\.\d+\.\d+\s+\d+|\bnc\b\s+.*<\s*\/)</match>
+    <description>T1048 - Exfiltration Over Alternative Protocol: File piped through netcat to remote host.</description>
+    <mitre>
+      <id>T1048</id>
+    </mitre>
+    <group>mitre,exfiltration,nc_exfil,</group>
+  </rule>
+
+  <rule id="101507" level="9">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bdd\b\s+if=\/dev\/(sda|vda|xvda|nvme).*\|\s*(nc|curl|ssh)\b)</match>
+    <description>T1048 - Exfiltration: Raw disk read piped to network tool — full disk exfiltration.</description>
+    <mitre>
+      <id>T1048</id>
+    </mitre>
+    <group>mitre,exfiltration,disk_exfil,</group>
+  </rule>
+
+  <rule id="101508" level="8">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bsplit\b\s+(-b|-l)\s+.*\.(tar|zip|gz|sql|db|csv|dump))</match>
+    <description>T1030 - Data Transfer Size Limits: Large file split into chunks — staged exfiltration.</description>
+    <mitre>
+      <id>T1030</id>
+    </mitre>
+    <group>mitre,exfiltration,chunked_exfil,</group>
+  </rule>
+
+  <rule id="101509" level="9">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bbase64\b\s+.*\|\s*(curl|wget|nc)\b|\bopenssl\b\s+enc\s+.*\|\s*(curl|nc)\b)</match>
+    <description>T1048 - Exfiltration: Encoded data piped to network tool — covert exfiltration.</description>
+    <mitre>
+      <id>T1048</id>
+    </mitre>
+    <group>mitre,exfiltration,encoded_exfil,</group>
+  </rule>
+
+  <rule id="101510" level="12" frequency="3" timeframe="300">
+    <if_matched_group>exfiltration</if_matched_group>
+    <same_source_ip />
+    <description>Exfiltration: Multiple exfiltration indicators from same host — data breach in progress.</description>
+    <mitre>
+      <id>T1048</id>
+    </mitre>
+    <group>mitre,exfiltration,data_breach,</group>
+  </rule>
+
+</group>

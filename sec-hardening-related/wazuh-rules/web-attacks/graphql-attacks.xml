@@ -1,0 +1,74 @@
+<!-- Wazuh Rules: GraphQL Attack Detection -->
+<!-- Rule IDs: 100440 - 100459 -->
+<group name="web,attack,graphql_attacks,">
+
+  <rule id="100440" level="7">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\{__schema\b|\{__type\b|query\s*\{\s*__schema)</url>
+    <description>GraphQL Attack: Introspection query detected — schema enumeration.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,graphql_attacks,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100441" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(query\s*\{(\s*\w+\s*\{){5,})</url>
+    <description>GraphQL Attack: Deeply nested query — resource exhaustion (DoS) attempt.</description>
+    <mitre>
+      <id>T1499</id>
+    </mitre>
+    <group>web,attack,graphql_attacks,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100442" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(mutation\s*\{.*\bmutation\s*\{|query\s*\{.*\bquery\s*\{)</url>
+    <description>GraphQL Attack: Batched operations — potential batch brute force or DoS.</description>
+    <mitre>
+      <id>T1499</id>
+    </mitre>
+    <group>web,attack,graphql_attacks,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100443" level="7">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(fragment\s+\w+\s+on\s+\w+\s*\{.*\.{3}\s*\w+.*\{.*\.{3}\s*\w+)</url>
+    <description>GraphQL Attack: Recursive fragment — circular reference DoS attempt.</description>
+    <mitre>
+      <id>T1499</id>
+    </mitre>
+    <group>web,attack,graphql_attacks,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100444" level="7">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(mutation\s*\{.*(deleteAll|dropAll|truncate|destroyAll)\b)</url>
+    <description>GraphQL Attack: Destructive mutation attempt detected.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,graphql_attacks,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100445" level="9">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\balias\d{2,}\s*:\s*\w+\(|(\balias\w+\s*:\s*\w+\(){5,})</url>
+    <description>GraphQL Attack: Alias-based batching abuse — field duplication attack.</description>
+    <mitre>
+      <id>T1499</id>
+    </mitre>
+    <group>web,attack,graphql_attacks,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100446" level="12" frequency="10" timeframe="60">
+    <if_matched_group>graphql_attacks</if_matched_group>
+    <description>GraphQL Attack: Repeated GraphQL attack patterns — automated exploitation.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,graphql_attacks,pci_dss_6.5.1,pci_dss_11.4,</group>
+  </rule>
+
+</group>

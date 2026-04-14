@@ -1,0 +1,104 @@
+<!-- Wazuh Rules: Remote/Local File Inclusion (RFI/LFI) Detection -->
+<!-- Rule IDs: 100140 - 100159 -->
+<group name="web,attack,file_inclusion,">
+
+  <rule id="100140" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(=(https?|ftp|php|zip|data|expect|input|filter):\/\/)</url>
+    <description>RFI: Remote file inclusion attempt via URL parameter with protocol scheme.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,rfi,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100141" level="7">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(php:\/\/filter\/(read|convert)|php:\/\/input|php:\/\/data)</url>
+    <description>RFI: PHP stream wrapper abuse (php://filter, php://input, php://data).</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,rfi,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100142" level="7">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(expect:\/\/|zip:\/\/|phar:\/\/|glob:\/\/)</url>
+    <description>RFI: Exotic PHP wrapper detected (expect/zip/phar/glob).</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,rfi,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100143" level="7">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\.\.\/(\.\.\/){2,}|(\%2e){2}(\%2f|\%5c))</url>
+    <description>LFI: Deep directory traversal attempt (3+ levels).</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,lfi,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100144" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\/etc\/passwd|\/etc\/shadow|\/etc\/hosts|\/etc\/group)</url>
+    <description>LFI: Attempted access to sensitive Unix system files.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,lfi,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100145" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\/proc\/self\/(environ|cmdline|fd|maps|status))</url>
+    <description>LFI: /proc/self access attempt — information disclosure.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,lfi,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100146" level="7">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(boot\.ini|win\.ini|system\.ini|\\windows\\system32)</url>
+    <description>LFI: Windows system file access attempt.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,lfi,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100147" level="7">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\.htaccess|\.htpasswd|wp-config\.php|web\.config|\.env)</url>
+    <description>LFI: Sensitive configuration file access attempt.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,lfi,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100148" level="7">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\/var\/log\/(apache2?|nginx|syslog|auth\.log|messages))</url>
+    <description>LFI: Log file inclusion attempt — potential log poisoning vector.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,lfi,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100149" level="12" frequency="8" timeframe="60">
+    <if_matched_group>file_inclusion</if_matched_group>
+    <description>File Inclusion: Repeated RFI/LFI attempts — automated attack likely.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,file_inclusion,pci_dss_6.5.1,pci_dss_11.4,</group>
+  </rule>
+
+</group>

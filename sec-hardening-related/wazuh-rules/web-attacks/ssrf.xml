@@ -1,0 +1,96 @@
+<!-- Wazuh Rules: Server-Side Request Forgery (SSRF) Detection -->
+<!-- Rule IDs: 100220 - 100239 -->
+<group name="web,attack,ssrf,">
+
+  <rule id="100220" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(=https?:\/\/(127\.0\.0\.1|localhost|0\.0\.0\.0|0x7f))</url>
+    <description>SSRF: Request to localhost/loopback via URL parameter.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,ssrf,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100221" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(=https?:\/\/(10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+|192\.168\.\d+\.\d+))</url>
+    <description>SSRF: Request targeting internal RFC1918 address range.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,ssrf,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100222" level="9">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(=https?:\/\/169\.254\.169\.254)</url>
+    <description>SSRF: Cloud metadata endpoint (169.254.169.254) access attempt — credential theft.</description>
+    <mitre>
+      <id>T1190</id>
+      <id>T1552</id>
+    </mitre>
+    <group>web,attack,ssrf,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100223" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(=https?:\/\/\[::1\]|=https?:\/\/\[0:0:0:0:0:0:0:1\])</url>
+    <description>SSRF: IPv6 loopback address (::1) access attempt.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,ssrf,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100224" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(=(gopher|dict|ldap|tftp):\/\/)</url>
+    <description>SSRF: Exotic protocol scheme (gopher/dict/ldap/tftp) — protocol smuggling attempt.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,ssrf,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100225" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(=https?:\/\/[^/]*@[^/]*\/|=https?:\/\/[^/]*%40[^/]*\/)</url>
+    <description>SSRF: URL with embedded credentials (@) — redirect bypass attempt.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,ssrf,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100226" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(=https?:\/\/(2130706433|017700000001|0x7f000001))</url>
+    <description>SSRF: Obfuscated localhost via decimal/octal/hex IP representation.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,ssrf,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100227" level="9">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\/latest\/meta-data|\/latest\/user-data|\/metadata\/instance)</url>
+    <description>SSRF: Cloud instance metadata path detected (AWS/GCP/Azure).</description>
+    <mitre>
+      <id>T1190</id>
+      <id>T1552</id>
+    </mitre>
+    <group>web,attack,ssrf,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100228" level="12" frequency="5" timeframe="60">
+    <if_matched_group>ssrf</if_matched_group>
+    <description>SSRF: Repeated SSRF attempts detected — automated attack.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,ssrf,pci_dss_6.5.1,pci_dss_11.4,</group>
+  </rule>
+
+</group>

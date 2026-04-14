@@ -1,0 +1,47 @@
+<!-- Wazuh Rules: Cross-Site Request Forgery (CSRF) Detection -->
+<!-- Rule IDs: 100240 - 100249 -->
+<group name="web,attack,csrf,">
+
+  <rule id="100240" level="6">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(csrf[_-]?token=|_token=|authenticity_token=)</url>
+    <id type="pcre2">(?i)^(?!.*Referer:)</id>
+    <description>CSRF: State-changing request with CSRF token but missing Referer header.</description>
+    <mitre>
+      <id>T1189</id>
+    </mitre>
+    <group>web,attack,csrf,pci_dss_6.5.9,</group>
+  </rule>
+
+  <rule id="100241" level="7">
+    <if_group>web|accesslog</if_group>
+    <protocol>POST</protocol>
+    <url type="pcre2">(?i)(\/api\/(transfer|payment|delete|admin|settings|password))</url>
+    <description>CSRF: POST to sensitive endpoint — verify CSRF token and origin.</description>
+    <mitre>
+      <id>T1189</id>
+    </mitre>
+    <group>web,attack,csrf,pci_dss_6.5.9,</group>
+  </rule>
+
+  <rule id="100242" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\/password\/change|\/account\/delete|\/admin\/users\/)</url>
+    <status>200</status>
+    <description>CSRF: Successful access to account management endpoint — verify legitimacy.</description>
+    <mitre>
+      <id>T1189</id>
+    </mitre>
+    <group>web,attack,csrf,pci_dss_6.5.9,</group>
+  </rule>
+
+  <rule id="100243" level="12" frequency="10" timeframe="30">
+    <if_matched_group>csrf</if_matched_group>
+    <description>CSRF: High frequency state-changing requests — potential CSRF attack.</description>
+    <mitre>
+      <id>T1189</id>
+    </mitre>
+    <group>web,attack,csrf,pci_dss_6.5.9,pci_dss_11.4,</group>
+  </rule>
+
+</group>

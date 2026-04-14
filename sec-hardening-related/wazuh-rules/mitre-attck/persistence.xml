@@ -1,0 +1,135 @@
+<!-- Wazuh Rules: MITRE ATT&CK - Persistence (TA0003) -->
+<!-- Rule IDs: 101100 - 101149 -->
+<group name="mitre,persistence,">
+
+  <rule id="101100" level="10">
+    <if_group>syscheck</if_group>
+    <field name="file" type="pcre2">(?i)(\/etc\/cron\.(d|daily|hourly|weekly|monthly)\/|\/var\/spool\/cron\/)</field>
+    <description>T1053.003 - Cron: New or modified cron job detected.</description>
+    <mitre>
+      <id>T1053.003</id>
+    </mitre>
+    <group>mitre,persistence,cron,</group>
+  </rule>
+
+  <rule id="101101" level="10">
+    <if_group>syscheck</if_group>
+    <field name="file" type="pcre2">(?i)(\/etc\/crontab$)</field>
+    <description>T1053.003 - Cron: System crontab modified — potential persistence mechanism.</description>
+    <mitre>
+      <id>T1053.003</id>
+    </mitre>
+    <group>mitre,persistence,cron,</group>
+  </rule>
+
+  <rule id="101102" level="12">
+    <if_group>syscheck</if_group>
+    <field name="file" type="pcre2">(?i)(\/root\/\.ssh\/authorized_keys|\/home\/\w+\/\.ssh\/authorized_keys)</field>
+    <description>T1098.004 - SSH Authorized Keys: Modification of SSH authorized_keys file.</description>
+    <mitre>
+      <id>T1098.004</id>
+    </mitre>
+    <group>mitre,persistence,ssh_keys,</group>
+  </rule>
+
+  <rule id="101103" level="10">
+    <if_group>syscheck</if_group>
+    <field name="file" type="pcre2">(?i)(\/etc\/rc\.local|\/etc\/init\.d\/|\/etc\/systemd\/system\/.*\.service)</field>
+    <description>T1037 - Boot/Logon Init Scripts: Startup script or systemd service modified.</description>
+    <mitre>
+      <id>T1037</id>
+    </mitre>
+    <group>mitre,persistence,init_scripts,</group>
+  </rule>
+
+  <rule id="101104" level="10">
+    <if_group>syscheck</if_group>
+    <field name="file" type="pcre2">(?i)(\/etc\/profile$|\/etc\/profile\.d\/|\.bashrc$|\.bash_profile$|\.zshrc$)</field>
+    <description>T1546.004 - Unix Shell Config: Shell profile/rc file modified — login persistence.</description>
+    <mitre>
+      <id>T1546.004</id>
+    </mitre>
+    <group>mitre,persistence,shell_config,</group>
+  </rule>
+
+  <rule id="101105" level="12">
+    <if_group>syscheck</if_group>
+    <field name="file" type="pcre2">(?i)(\/etc\/passwd$|\/etc\/shadow$|\/etc\/group$)</field>
+    <description>T1136.001 - Create Account: User/group database file modified.</description>
+    <mitre>
+      <id>T1136.001</id>
+    </mitre>
+    <group>mitre,persistence,create_account,</group>
+  </rule>
+
+  <rule id="101106" level="10">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\buseradd\b|\badduser\b|\busermod\b.*-aG\s+(sudo|wheel|root|admin))</match>
+    <description>T1136.001 - Create Account: New user created or user added to privileged group.</description>
+    <mitre>
+      <id>T1136.001</id>
+    </mitre>
+    <group>mitre,persistence,create_account,</group>
+  </rule>
+
+  <rule id="101107" level="10">
+    <if_group>syscheck</if_group>
+    <field name="file" type="pcre2">(?i)(\/etc\/sudoers$|\/etc\/sudoers\.d\/)</field>
+    <description>T1548.003 - Sudo Policy: Sudoers file modified — privilege persistence.</description>
+    <mitre>
+      <id>T1548.003</id>
+    </mitre>
+    <group>mitre,persistence,sudoers,</group>
+  </rule>
+
+  <rule id="101108" level="10">
+    <if_group>syscheck</if_group>
+    <field name="file" type="pcre2">(?i)(\/etc\/ld\.so\.(preload|conf)$)</field>
+    <description>T1574.006 - LD_PRELOAD: Shared library preload configuration modified.</description>
+    <mitre>
+      <id>T1574.006</id>
+    </mitre>
+    <group>mitre,persistence,ld_preload,</group>
+  </rule>
+
+  <rule id="101109" level="12">
+    <if_group>syscheck</if_group>
+    <field name="file" type="pcre2">(?i)(\/etc\/pam\.d\/|\/lib\/security\/pam_)</field>
+    <description>T1556.003 - PAM Modification: PAM module configuration modified — auth backdoor.</description>
+    <mitre>
+      <id>T1556.003</id>
+    </mitre>
+    <group>mitre,persistence,pam,</group>
+  </rule>
+
+  <rule id="101110" level="10">
+    <if_group>syscheck</if_group>
+    <field name="file" type="pcre2">(?i)(\/usr\/lib\/systemd\/system\/.*\.service|\.timer$)</field>
+    <description>T1543.002 - Systemd Service: System-level systemd service/timer created or modified.</description>
+    <mitre>
+      <id>T1543.002</id>
+    </mitre>
+    <group>mitre,persistence,systemd_service,</group>
+  </rule>
+
+  <rule id="101111" level="9">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bsystemctl\b\s+(enable|daemon-reload).*\.(service|timer))</match>
+    <description>T1543.002 - Systemd Service: Service enabled via systemctl — persistence mechanism.</description>
+    <mitre>
+      <id>T1543.002</id>
+    </mitre>
+    <group>mitre,persistence,systemd_service,</group>
+  </rule>
+
+  <rule id="101112" level="10">
+    <if_group>syscheck</if_group>
+    <field name="file" type="pcre2">(?i)(\/etc\/motd|\/etc\/update-motd\.d\/)</field>
+    <description>T1037.004 - RC Scripts: Message-of-the-day scripts modified — login trigger persistence.</description>
+    <mitre>
+      <id>T1037.004</id>
+    </mitre>
+    <group>mitre,persistence,motd,</group>
+  </rule>
+
+</group>

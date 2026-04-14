@@ -1,0 +1,225 @@
+<group name="ddos,network,">
+
+  <rule id="100100" level="10">
+    <if_sid>1002</if_sid>
+    <match>kernel: \[.*\] .*ICMP.*</match>
+    <description>Possible ICMP flood detected</description>
+    <group>ddos,l3,icmp_flood,</group>
+    <options>no_full_log</options>
+    <mitre><id>T1498</id></mitre>
+  </rule>
+
+  <rule id="100101" level="12">
+    <if_sid>1002</if_sid>
+    <match>kernel: .*Fragment.*|kernel: .*fragmented.*|kernel: .*ip_frag_</match>
+    <description>IP fragmentation anomaly — possible Teardrop attack</description>
+    <group>ddos,l3,frag_attack,</group>
+    <mitre><id>T1498</id></mitre>
+  </rule>
+
+  <rule id="100102" level="13">
+    <if_sid>100100</if_sid>
+    <same_source_ip/>
+    <timeframe>10</timeframe>
+    <frequency>50</frequency>
+    <description>ICMP flood confirmed — high frequency from same source</description>
+    <group>ddos,l3,icmp_flood,amplification,</group>
+    <mitre><id>T1498.001</id></mitre>
+  </rule>
+
+  <rule id="100110" level="13">
+    <if_sid>1002</if_sid>
+    <match>kernel: .*possible SYN flooding.*|kernel: .*SYN cookies.*|kernel: .*TCP: request_sock_TCP.*</match>
+    <description>SYN flood detected — kernel SYN cookie triggered</description>
+    <group>ddos,l4,syn_flood,</group>
+    <mitre><id>T1498.001</id></mitre>
+  </rule>
+
+  <rule id="100111" level="14">
+    <if_sid>1002</if_sid>
+    <match>nf_conntrack: table full|nf_conntrack.*dropping packet</match>
+    <description>Conntrack table full — active connection flood in progress</description>
+    <group>ddos,l4,syn_flood,conntrack,</group>
+    <mitre><id>T1498.001</id></mitre>
+  </rule>
+
+  <rule id="100112" level="10">
+    <decoded_as>iptables</decoded_as>
+    <match>PROTO=UDP</match>
+    <description>UDP packet dropped by iptables</description>
+    <group>ddos,l4,udp,</group>
+  </rule>
+
+  <rule id="100113" level="13">
+    <if_sid>100112</if_sid>
+    <same_source_ip/>
+    <timeframe>5</timeframe>
+    <frequency>200</frequency>
+    <description>UDP flood confirmed — high-rate drops from same source</description>
+    <group>ddos,l4,udp_flood,</group>
+    <mitre><id>T1498.001</id></mitre>
+  </rule>
+
+  <rule id="100114" level="13">
+    <decoded_as>iptables</decoded_as>
+    <match>PROTO=UDP DPT=53|PROTO=UDP SPT=53</match>
+    <same_source_ip/>
+    <timeframe>10</timeframe>
+    <frequency>100</frequency>
+    <description>DNS amplification attack — high volume UDP/53</description>
+    <group>ddos,l4,dns_amplification,amplification,</group>
+    <mitre><id>T1498.002</id></mitre>
+  </rule>
+
+  <rule id="100115" level="13">
+    <decoded_as>iptables</decoded_as>
+    <match>PROTO=UDP DPT=123|PROTO=UDP SPT=123</match>
+    <same_source_ip/>
+    <timeframe>10</timeframe>
+    <frequency>50</frequency>
+    <description>NTP amplification attack — high volume UDP/123</description>
+    <group>ddos,l4,ntp_amplification,amplification,</group>
+    <mitre><id>T1498.002</id></mitre>
+  </rule>
+
+  <rule id="100116" level="12">
+    <decoded_as>iptables</decoded_as>
+    <match>PROTO=UDP DPT=1900|PROTO=UDP SPT=1900</match>
+    <same_source_ip/>
+    <timeframe>10</timeframe>
+    <frequency>50</frequency>
+    <description>SSDP amplification attack — high volume UDP/1900</description>
+    <group>ddos,l4,ssdp_amplification,amplification,</group>
+    <mitre><id>T1498.002</id></mitre>
+  </rule>
+
+  <rule id="100117" level="14">
+    <decoded_as>iptables</decoded_as>
+    <match>PROTO=UDP DPT=11211|PROTO=UDP SPT=11211</match>
+    <same_source_ip/>
+    <timeframe>5</timeframe>
+    <frequency>20</frequency>
+    <description>Memcached amplification — highest amplification factor</description>
+    <group>ddos,l4,memcached_amplification,amplification,</group>
+    <mitre><id>T1498.002</id></mitre>
+  </rule>
+
+  <rule id="100118" level="12">
+    <if_sid>1002</if_sid>
+    <match>kernel: .*TCP.*RST.*flood|iptables.*TCP.*flags:.*RST ACK</match>
+    <same_source_ip/>
+    <timeframe>5</timeframe>
+    <frequency>100</frequency>
+    <description>TCP RST/ACK flood — stateless packet attack</description>
+    <group>ddos,l4,rst_flood,</group>
+    <mitre><id>T1498.001</id></mitre>
+  </rule>
+
+  <rule id="100120" level="8">
+    <decoded_as>nginx-access</decoded_as>
+    <description>HTTP request logged (nginx)</description>
+    <group>ddos,l7,http,</group>
+  </rule>
+
+  <rule id="100121" level="13">
+    <if_sid>100120</if_sid>
+    <same_source_ip/>
+    <timeframe>10</timeframe>
+    <frequency>300</frequency>
+    <description>HTTP flood — 300+ requests in 10s from single IP</description>
+    <group>ddos,l7,http_flood,</group>
+    <mitre><id>T1499.003</id></mitre>
+  </rule>
+
+  <rule id="100122" level="12">
+    <decoded_as>nginx-access</decoded_as>
+    <match> 503 </match>
+    <timeframe>30</timeframe>
+    <frequency>50</frequency>
+    <description>HTTP 503 storm — server returning Service Unavailable at high rate</description>
+    <group>ddos,l7,http_flood,availability,</group>
+    <mitre><id>T1499.003</id></mitre>
+  </rule>
+
+  <rule id="100123" level="13">
+    <if_sid>30106</if_sid>
+    <match>AH00052|timeout|read timeout|Request header read timeout</match>
+    <timeframe>60</timeframe>
+    <frequency>20</frequency>
+    <description>Slowloris / Slow HTTP attack — many connection timeouts</description>
+    <group>ddos,l7,slowloris,slow_attack,</group>
+    <mitre><id>T1499.003</id></mitre>
+  </rule>
+
+  <rule id="100124" level="13">
+    <decoded_as>nginx-error</decoded_as>
+    <match>client timed out|upstream timed out|recv() failed</match>
+    <same_source_ip/>
+    <timeframe>30</timeframe>
+    <frequency>10</frequency>
+    <description>Slow POST attack — upstream timeouts from single IP</description>
+    <group>ddos,l7,slow_post,slow_attack,</group>
+    <mitre><id>T1499.003</id></mitre>
+  </rule>
+
+  <rule id="100125" level="13">
+    <decoded_as>apache-access</decoded_as>
+    <same_source_ip/>
+    <timeframe>10</timeframe>
+    <frequency>300</frequency>
+    <description>HTTP flood — 300+ requests in 10s from single IP (apache)</description>
+    <group>ddos,l7,http_flood,</group>
+    <mitre><id>T1499.003</id></mitre>
+  </rule>
+
+  <rule id="100126" level="11">
+    <decoded_as>nginx-access</decoded_as>
+    <match>"-" "-"|"Go-http-client|"python-requests|"curl/|"Wget/|"masscan|"zgrab</match>
+    <same_source_ip/>
+    <timeframe>30</timeframe>
+    <frequency>50</frequency>
+    <description>Bot/scanner HTTP flood — automated UA at high rate</description>
+    <group>ddos,l7,bot_flood,scanner,</group>
+    <mitre><id>T1499.003</id></mitre>
+  </rule>
+
+  <rule id="100127" level="11">
+    <decoded_as>nginx-access</decoded_as>
+    <match> 40[0-9] </match>
+    <same_source_ip/>
+    <timeframe>60</timeframe>
+    <frequency>100</frequency>
+    <description>High 4xx rate from single IP — scanning or credential stuffing</description>
+    <group>ddos,l7,scanning,4xx_flood,</group>
+    <mitre><id>T1499.003</id></mitre>
+  </rule>
+
+  <rule id="100130" level="15">
+    <if_sid>100110,100111,100113</if_sid>
+    <if_sid>100121,100125</if_sid>
+    <timeframe>60</timeframe>
+    <frequency>2</frequency>
+    <description>CRITICAL: Multi-vector DDoS — simultaneous L4 + L7</description>
+    <group>ddos,multi_vector,critical,</group>
+    <mitre><id>T1498</id><id>T1499</id></mitre>
+  </rule>
+
+  <rule id="100131" level="15">
+    <if_sid>100121,100125,100113</if_sid>
+    <if_sid>110100,110110,110200</if_sid>
+    <timeframe>120</timeframe>
+    <description>CRITICAL: DDoS + web exploitation — smokescreen attack</description>
+    <group>ddos,smokescreen,multi_vector,critical,</group>
+    <mitre><id>T1498</id><id>T1190</id></mitre>
+  </rule>
+
+  <rule id="100132" level="14">
+    <if_sid>100120</if_sid>
+    <timeframe>10</timeframe>
+    <frequency>1000</frequency>
+    <description>Distributed HTTP flood — 1000+ req/10s (botnet-level)</description>
+    <group>ddos,l7,distributed,botnet,</group>
+    <mitre><id>T1499.003</id></mitre>
+  </rule>
+
+</group>

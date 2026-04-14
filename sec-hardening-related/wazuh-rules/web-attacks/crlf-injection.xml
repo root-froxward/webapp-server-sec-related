@@ -1,0 +1,34 @@
+<!-- Wazuh Rules: CRLF Injection Detection -->
+<!-- Rule IDs: 100350 - 100359 -->
+<group name="web,attack,crlf_injection,">
+
+  <rule id="100350" level="7">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(%0d%0a|%0d|%0a|%0D%0A)</url>
+    <description>CRLF Injection: URL-encoded line terminator detected in request.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,crlf_injection,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100351" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(%0d%0a|%0D%0A)(X-Forwarded|X-Custom|X-Injected|Set-Cookie)</url>
+    <description>CRLF Injection: Header injection via CRLF in URL parameter.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,crlf_injection,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100352" level="12" frequency="5" timeframe="60">
+    <if_matched_group>crlf_injection</if_matched_group>
+    <description>CRLF Injection: Repeated CRLF injection attempts detected.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,crlf_injection,pci_dss_6.5.1,pci_dss_11.4,</group>
+  </rule>
+
+</group>

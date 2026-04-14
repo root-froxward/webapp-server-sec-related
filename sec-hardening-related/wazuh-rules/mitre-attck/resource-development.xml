@@ -1,0 +1,95 @@
+<!-- Wazuh Rules: MITRE ATT&CK - Resource Development (TA0042) -->
+<!-- Rule IDs: 101650 - 101699 -->
+<group name="mitre,resource_development,">
+
+  <rule id="101650" level="9">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bmsfvenom\b|\bmsfconsole\b|\bmsfpayload\b|\bmsfencode\b)</match>
+    <description>T1587.001 - Develop Capabilities: Metasploit payload generation tool detected.</description>
+    <mitre>
+      <id>T1587.001</id>
+    </mitre>
+    <group>mitre,resource_development,payload_generation,</group>
+  </rule>
+
+  <rule id="101651" level="8">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bgcc\b\s+.*-o\s+.*exploit|\bg\+\+\b\s+.*-o\s+.*exploit|\bnasm\b\s+-f\s+elf)</match>
+    <description>T1587.001 - Develop Capabilities: Exploit compilation detected.</description>
+    <mitre>
+      <id>T1587.001</id>
+    </mitre>
+    <group>mitre,resource_development,exploit_compile,</group>
+  </rule>
+
+  <rule id="101652" level="8">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bsearchsploit\b|\bexploit-db\b|\bpoc\b.*\bgit\s+clone\b)</match>
+    <description>T1588.005 - Obtain Capabilities: Exploit search/download tool detected.</description>
+    <mitre>
+      <id>T1588.005</id>
+    </mitre>
+    <group>mitre,resource_development,exploit_search,</group>
+  </rule>
+
+  <rule id="101653" level="8">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bgit\b\s+clone\s+.*github\.com.*\/(exploit|payload|shell|rat|c2|malware|backdoor))</match>
+    <description>T1588.005 - Obtain Capabilities: Offensive tool repository cloned from GitHub.</description>
+    <mitre>
+      <id>T1588.005</id>
+    </mitre>
+    <group>mitre,resource_development,tool_download,</group>
+  </rule>
+
+  <rule id="101654" level="9">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bpip\b\s+install\s+.*(pwntools|impacket|scapy|paramiko|pycrypto))</match>
+    <description>T1588.002 - Obtain Capabilities: Offensive Python library installation.</description>
+    <mitre>
+      <id>T1588.002</id>
+    </mitre>
+    <group>mitre,resource_development,tool_install,</group>
+  </rule>
+
+  <rule id="101655" level="7">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bapt\b\s+install\s+.*(nmap|hydra|john|aircrack|hashcat|sqlmap|nikto|gobuster))</match>
+    <description>T1588.002 - Obtain Capabilities: Offensive tool installation via package manager.</description>
+    <mitre>
+      <id>T1588.002</id>
+    </mitre>
+    <group>mitre,resource_development,tool_install,</group>
+  </rule>
+
+  <rule id="101656" level="8">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bcertbot\b\s+certonly|\bopenssl\b\s+req\s+-new.*-subj|\bacme\.sh\b)</match>
+    <description>T1587.003 - Digital Certificates: SSL/TLS certificate generation — potential C2 infrastructure.</description>
+    <mitre>
+      <id>T1587.003</id>
+    </mitre>
+    <group>mitre,resource_development,certificate_gen,</group>
+  </rule>
+
+  <rule id="101657" level="8">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bupx\b\s+(-[0-9]|--best|--ultra-brute)\s+|\bpyinstaller\b\s+--onefile|\bnuitka\b)</match>
+    <description>T1027.002 - Software Packing: Binary packing/compilation tool detected.</description>
+    <mitre>
+      <id>T1027.002</id>
+    </mitre>
+    <group>mitre,resource_development,packing,</group>
+  </rule>
+
+  <rule id="101658" level="10" frequency="3" timeframe="600">
+    <if_matched_group>resource_development</if_matched_group>
+    <same_source_ip />
+    <description>Resource Development: Multiple offensive tool preparations — attack staging in progress.</description>
+    <mitre>
+      <id>T1587</id>
+    </mitre>
+    <group>mitre,resource_development,staging,</group>
+  </rule>
+
+</group>

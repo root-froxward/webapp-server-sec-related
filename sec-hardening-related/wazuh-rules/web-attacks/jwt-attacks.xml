@@ -1,0 +1,74 @@
+<!-- Wazuh Rules: JWT Attack Detection -->
+<!-- Rule IDs: 100420 - 100439 -->
+<group name="web,attack,jwt_attacks,">
+
+  <rule id="100420" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(eyJhbGciOiJub25lIi|"alg"\s*:\s*"none"|"alg"\s*:\s*"None")</url>
+    <description>JWT Attack: Algorithm "none" detected — signature bypass attempt.</description>
+    <mitre>
+      <id>T1550</id>
+    </mitre>
+    <group>web,attack,jwt_attacks,pci_dss_6.5.10,</group>
+  </rule>
+
+  <rule id="100421" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)("alg"\s*:\s*"HS256".*"typ"\s*:\s*"JWT".*-----BEGIN\s+(RSA\s+)?PUBLIC\s+KEY)</url>
+    <description>JWT Attack: Algorithm confusion — HS256 with RSA public key (key confusion attack).</description>
+    <mitre>
+      <id>T1550</id>
+    </mitre>
+    <group>web,attack,jwt_attacks,pci_dss_6.5.10,</group>
+  </rule>
+
+  <rule id="100422" level="7">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)("kid"\s*:\s*"[^"]*(\.\./|;|\\x|%00|' OR|UNION))</url>
+    <description>JWT Attack: KID parameter injection — directory traversal or SQLi in key ID.</description>
+    <mitre>
+      <id>T1550</id>
+    </mitre>
+    <group>web,attack,jwt_attacks,pci_dss_6.5.10,</group>
+  </rule>
+
+  <rule id="100423" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)("jku"\s*:\s*"https?://|"x5u"\s*:\s*"https?://)</url>
+    <description>JWT Attack: JKU/X5U header injection — external key URL specified.</description>
+    <mitre>
+      <id>T1550</id>
+    </mitre>
+    <group>web,attack,jwt_attacks,pci_dss_6.5.10,</group>
+  </rule>
+
+  <rule id="100424" level="7">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)("iss"\s*:\s*"[^"]{100,}"|"sub"\s*:\s*"admin"|"role"\s*:\s*"admin")</url>
+    <description>JWT Attack: Suspicious JWT claims — privilege escalation attempt.</description>
+    <mitre>
+      <id>T1550</id>
+    </mitre>
+    <group>web,attack,jwt_attacks,pci_dss_6.5.10,</group>
+  </rule>
+
+  <rule id="100425" level="7">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)("exp"\s*:\s*[0-9]{11,}|"nbf"\s*:\s*0\b|"iat"\s*:\s*0\b)</url>
+    <description>JWT Attack: Manipulated time claims — token validity abuse (far-future exp or zero nbf/iat).</description>
+    <mitre>
+      <id>T1550</id>
+    </mitre>
+    <group>web,attack,jwt_attacks,pci_dss_6.5.10,</group>
+  </rule>
+
+  <rule id="100426" level="12" frequency="5" timeframe="60">
+    <if_matched_group>jwt_attacks</if_matched_group>
+    <description>JWT Attack: Repeated JWT manipulation attempts — active token exploitation.</description>
+    <mitre>
+      <id>T1550</id>
+    </mitre>
+    <group>web,attack,jwt_attacks,pci_dss_6.5.10,pci_dss_11.4,</group>
+  </rule>
+
+</group>

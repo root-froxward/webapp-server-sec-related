@@ -1,0 +1,247 @@
+<group name="web,vulnerability,attack,">
+
+  <rule id="110100" level="12">
+    <decoded_as>nginx-access</decoded_as>
+    <url_pcre2>(?i)(union[\s\+]+select|select.+from|insert[\s\+]+into|delete[\s\+]+from|drop[\s\+]+(table|database)|truncate[\s\+]+table|exec[\s\+]*\(|execute[\s\+]*\(|cast\s*\(|convert\s*\(|information_schema|sys\.tables|sysobjects)</url_pcre2>
+    <description>SQLi — UNION/SELECT/DROP pattern detected</description>
+    <group>sqli,web_attack,</group>
+    <mitre><id>T1190</id></mitre>
+  </rule>
+
+  <rule id="110101" level="12">
+    <decoded_as>nginx-access</decoded_as>
+    <url_pcre2>(?i)('|%27|--|%2D%2D|;|%3B|\bOR\b\s+\d+=\d+|\bAND\b\s+\d+=\d+|1=1|1%3D1|\bOR\b\s+'[^']*'='[^']*'|SLEEP\s*\(|BENCHMARK\s*\(|WAITFOR\s+DELAY|pg_sleep|EXTRACTVALUE\s*\(|UPDATEXML\s*\()</url_pcre2>
+    <description>SQLi — boolean/time-based/error-based injection</description>
+    <group>sqli,web_attack,</group>
+    <mitre><id>T1190</id></mitre>
+  </rule>
+
+  <rule id="110102" level="14">
+    <decoded_as>nginx-access</decoded_as>
+    <url_pcre2>(?i)(INTO\s+OUTFILE|INTO\s+DUMPFILE|LOAD_FILE\s*\(|xp_cmdshell|xp_regread|sp_executesql|openrowset|opendatasource)</url_pcre2>
+    <description>CRITICAL SQLi — file write / RCE via SQL</description>
+    <group>sqli,rce,web_attack,critical,</group>
+    <mitre><id>T1190</id><id>T1059</id></mitre>
+  </rule>
+
+  <rule id="110103" level="13">
+    <decoded_as>modsecurity</decoded_as>
+    <match>SQL Injection|SQLi|SQLI|sql injection</match>
+    <description>ModSecurity: SQL injection blocked</description>
+    <group>sqli,waf,web_attack,</group>
+    <mitre><id>T1190</id></mitre>
+  </rule>
+
+  <rule id="110104" level="15">
+    <if_sid>110100,110101,110102,110103</if_sid>
+    <same_source_ip/>
+    <timeframe>60</timeframe>
+    <frequency>5</frequency>
+    <description>CRITICAL: Persistent SQLi — 5+ attempts from same IP</description>
+    <group>sqli,web_attack,persistent,critical,</group>
+    <mitre><id>T1190</id></mitre>
+  </rule>
+
+  <rule id="110110" level="10">
+    <decoded_as>nginx-access</decoded_as>
+    <url_pcre2>(?i)(<script[\s>]|<\/script>|javascript:|onerror\s*=|onload\s*=|onclick\s*=|eval\s*\(|document\.cookie|document\.write|window\.location|alert\s*\(|%3Cscript|%22%3E%3Cscript|XSS|<img[^>]+src\s*=\s*['"]*javascript)</url_pcre2>
+    <description>XSS attempt detected in URL/parameters</description>
+    <group>xss,web_attack,</group>
+    <mitre><id>T1059.007</id></mitre>
+  </rule>
+
+  <rule id="110111" level="12">
+    <if_sid>110110</if_sid>
+    <same_source_ip/>
+    <timeframe>60</timeframe>
+    <frequency>5</frequency>
+    <description>Persistent XSS attack from same IP</description>
+    <group>xss,web_attack,scanner,</group>
+    <mitre><id>T1059.007</id></mitre>
+  </rule>
+
+  <rule id="110120" level="13">
+    <decoded_as>nginx-access</decoded_as>
+    <url_pcre2>(?i)(\.\.\/|\.\.\\|%2e%2e%2f|%2e%2e\/|\.\.%2f|%252e%252e|\/etc\/passwd|\/etc\/shadow|\/proc\/self|\/var\/log|\/windows\/system32|boot\.ini|win\.ini|php:\/\/filter|php:\/\/input|php:\/\/fd|data:\/\/text|expect:\/\/|zip:\/\/)</url_pcre2>
+    <description>LFI/Path traversal — directory traversal or PHP wrapper</description>
+    <group>lfi,path_traversal,web_attack,</group>
+    <mitre><id>T1083</id></mitre>
+  </rule>
+
+  <rule id="110121" level="13">
+    <decoded_as>nginx-access</decoded_as>
+    <url_pcre2>(?i)(=https?:\/\/|=ftp:\/\/|=\/\/[^\/]|include.*https?:\/\/|require.*https?:\/\/|file_get_contents.*https?:\/\/)</url_pcre2>
+    <description>RFI attempt — remote file inclusion via external URL</description>
+    <group>rfi,web_attack,</group>
+    <mitre><id>T1190</id></mitre>
+  </rule>
+
+  <rule id="110130" level="13">
+    <decoded_as>nginx-access</decoded_as>
+    <url_pcre2>(?i)(169\.254\.169\.254|metadata\.google\.internal|fd00:|::1|localhost|127\.\d+\.\d+\.\d+|10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+|file:\/\/|gopher:\/\/|dict:\/\/|sftp:\/\/|ldap:\/\/)</url_pcre2>
+    <description>SSRF attempt — request targeting internal/metadata endpoints</description>
+    <group>ssrf,web_attack,</group>
+    <mitre><id>T1190</id></mitre>
+  </rule>
+
+  <rule id="110140" level="13">
+    <decoded_as>nginx-access</decoded_as>
+    <url_pcre2>(?i)(<!ENTITY|<!DOCTYPE[^>]+SYSTEM|<!DOCTYPE[^>]+PUBLIC|SYSTEM\s+['"]file:|SYSTEM\s+['"]http:|%xxe;|%external;)</url_pcre2>
+    <description>XXE injection attempt — XML external entity in request</description>
+    <group>xxe,web_attack,</group>
+    <mitre><id>T1190</id></mitre>
+  </rule>
+
+  <rule id="110150" level="15">
+    <decoded_as>nginx-access</decoded_as>
+    <url_pcre2>(?i)(;ls|;id|;whoami|;uname|;cat\s|;wget\s|;curl\s|;bash\s|;sh\s|\|ls|\|id|\|whoami|\|uname|\|cat\s|\|wget\s|\|curl\s|`id`|`ls`|`whoami`|\$\(id\)|\$\(ls\)|\$\(whoami\)|%60id%60|%60whoami%60|cmd\.exe|\/bin\/sh|\/bin\/bash|powershell|%7C|%3B.*id)</url_pcre2>
+    <description>CRITICAL: Command injection / RCE attempt</description>
+    <group>rce,cmdi,web_attack,critical,</group>
+    <mitre><id>T1059</id></mitre>
+  </rule>
+
+  <rule id="110160" level="15">
+    <decoded_as>nginx-access</decoded_as>
+    <match>\${jndi:|${${::-j}${::-n}${::-d}${::-i}|${j${::-n}di|%24%7Bjndi%3A|${jNdI:|${JnDi:</match>
+    <description>CRITICAL: Log4Shell (CVE-2021-44228) — JNDI injection</description>
+    <group>log4shell,rce,web_attack,cve,critical,</group>
+    <mitre><id>T1190</id><id>T1059</id></mitre>
+  </rule>
+
+  <rule id="110161" level="15">
+    <decoded_as>nginx-access</decoded_as>
+    <url_pcre2>(?i)(class\.module\.classLoader|class\[.*\]\.module|ClassLoader|java\.lang\.Runtime|ProcessBuilder|getRuntime\(\)\.exec)</url_pcre2>
+    <description>CRITICAL: Spring4Shell / Java RCE (CVE-2022-22965)</description>
+    <group>spring4shell,rce,web_attack,cve,critical,</group>
+    <mitre><id>T1190</id></mitre>
+  </rule>
+
+  <rule id="110162" level="15">
+    <decoded_as>nginx-access</decoded_as>
+    <match>() { :;</match>
+    <description>CRITICAL: Shellshock (CVE-2014-6271)</description>
+    <group>shellshock,rce,web_attack,cve,critical,</group>
+    <mitre><id>T1190</id></mitre>
+  </rule>
+
+  <rule id="110170" level="13">
+    <decoded_as>nginx-access</decoded_as>
+    <url_pcre2>(?i)(\{\{.*\}\}|\{%.*%\}|\${.*}|#\{.*\}|@\(.*\)|freemarker|velocity|smarty|twig|jinja|pebble|thymeleaf|__import__|__class__|__mro__|__subclasses__)</url_pcre2>
+    <description>SSTI — server-side template injection pattern</description>
+    <group>ssti,web_attack,</group>
+    <mitre><id>T1190</id></mitre>
+  </rule>
+
+  <rule id="110180" level="14">
+    <decoded_as>nginx-access</decoded_as>
+    <url_pcre2>(?i)(rO0AB|aced0005|%ac%ed%00%05|YWNlZA|__reduce__|__reduce_ex__|cPickle|pickle\.loads|java\.io\.ObjectInputStream|ysoserial|CommonsCollections)</url_pcre2>
+    <description>Deserialization attack — Java/Python payload detected</description>
+    <group>deserialization,web_attack,</group>
+    <mitre><id>T1190</id></mitre>
+  </rule>
+
+  <rule id="110200" level="10">
+    <decoded_as>nginx-access</decoded_as>
+    <url_pcre2>(?i)(\/login|\/signin|\/auth|\/wp-login\.php|\/admin\/login|\/user\/login|\/account\/login|\/api\/auth|\/oauth\/token)</url_pcre2>
+    <match> POST </match>
+    <description>POST to login endpoint logged</description>
+    <group>auth,brute_force,</group>
+  </rule>
+
+  <rule id="110201" level="13">
+    <if_sid>110200</if_sid>
+    <same_source_ip/>
+    <timeframe>60</timeframe>
+    <frequency>10</frequency>
+    <description>Brute force — 10+ login attempts in 60s from same IP</description>
+    <group>auth,brute_force,web_attack,</group>
+    <mitre><id>T1110</id></mitre>
+  </rule>
+
+  <rule id="110202" level="12">
+    <decoded_as>nginx-access</decoded_as>
+    <url_pcre2>(?i)(admin'--|admin'%20--|admin' or '1'='1|admin\x27|Authorization:\s*null|Bearer\s+null|X-Auth-Token:\s*null|X-API-Key:\s*null)</url_pcre2>
+    <description>Authentication bypass attempt</description>
+    <group>auth_bypass,web_attack,</group>
+    <mitre><id>T1078</id></mitre>
+  </rule>
+
+  <rule id="110203" level="13">
+    <decoded_as>nginx-access</decoded_as>
+    <url_pcre2>(?i)(eyJhbGciOiJub25lIi|alg.*none|"alg":"none")</url_pcre2>
+    <description>JWT algorithm none — auth bypass attempt</description>
+    <group>jwt,auth_bypass,web_attack,</group>
+    <mitre><id>T1078</id></mitre>
+  </rule>
+
+  <rule id="110210" level="10">
+    <decoded_as>nginx-access</decoded_as>
+    <url_pcre2>(?i)(\?url=https?:\/\/|&url=https?:\/\/|\?redirect=https?:\/\/|\?return=https?:\/\/|\?next=https?:\/\/|\?goto=https?:\/\/|\?redir=https?:\/\/)</url_pcre2>
+    <description>Open redirect attempt — external URL in redirect parameter</description>
+    <group>open_redirect,web_attack,</group>
+    <mitre><id>T1190</id></mitre>
+  </rule>
+
+  <rule id="110220" level="14">
+    <decoded_as>nginx-access</decoded_as>
+    <url_pcre2>(?i)(\.php\d?$|\.phtml$|\.phar$|\.asp$|\.aspx$|\.jsp$|\.jspx$|\.cfm$|\.cgi$|\.pl$|\.py$|\.rb$|\.exe$|\.sh$|\.bat$|\.cmd$|\.ps1$)</url_pcre2>
+    <match> POST </match>
+    <description>Malicious file upload — executable extension in POST</description>
+    <group>file_upload,webshell,web_attack,</group>
+    <mitre><id>T1505.003</id></mitre>
+  </rule>
+
+  <rule id="110221" level="15">
+    <decoded_as>nginx-access</decoded_as>
+    <url_pcre2>(?i)(c99\.php|r57\.php|b374k|wso\.php|shell\.php|cmd\.php|passwd\.php|phpspy|alfashell|indoxploit|hunter\.php|bypass\.php|1337\.php)</url_pcre2>
+    <description>CRITICAL: Known webshell access attempt</description>
+    <group>webshell,rce,web_attack,critical,</group>
+    <mitre><id>T1505.003</id></mitre>
+  </rule>
+
+  <rule id="110230" level="10">
+    <decoded_as>nginx-access</decoded_as>
+    <url_pcre2>(?i)(\/\.git\/|\/\.env|\/\.htaccess|\/\.htpasswd|\/wp-config\.php|\/config\.php|\/database\.yml|\/application\.yml|\/settings\.py|\/secrets\.yml|\/\.DS_Store|\/web\.config|\/phpinfo\.php|\/server-status)</url_pcre2>
+    <description>Sensitive file probe — config/backup/info file access</description>
+    <group>recon,info_disclosure,web_attack,</group>
+    <mitre><id>T1083</id></mitre>
+  </rule>
+
+  <rule id="110231" level="12">
+    <decoded_as>nginx-access</decoded_as>
+    <match>nikto|sqlmap|nmap|masscan|zgrab|dirsearch|gobuster|ffuf|wfuzz|burpsuite|w3af|acunetix|nessus|openvas|qualys</match>
+    <description>Known vulnerability scanner in User-Agent</description>
+    <group>scanner,recon,web_attack,</group>
+    <mitre><id>T1595</id></mitre>
+  </rule>
+
+  <rule id="110240" level="10">
+    <decoded_as>nginx-access</decoded_as>
+    <url_pcre2>(?i)(\/api\/users?\/\d+|\/api\/orders?\/\d+|\/api\/accounts?\/\d+|\/api\/invoices?\/\d+|\/api\/files?\/\d+)</url_pcre2>
+    <same_source_ip/>
+    <timeframe>30</timeframe>
+    <frequency>20</frequency>
+    <description>IDOR enumeration — rapid sequential ID access</description>
+    <group>idor,web_attack,</group>
+    <mitre><id>T1083</id></mitre>
+  </rule>
+
+  <rule id="110300" level="15">
+    <if_sid>110100,110110,110120,110130,110150</if_sid>
+    <same_source_ip/>
+    <timeframe>120</timeframe>
+    <frequency>3</frequency>
+    <description>CRITICAL: Multi-vector web attack from same IP</description>
+    <group>multi_vector,web_attack,critical,scanner,</group>
+    <mitre><id>T1190</id></mitre>
+  </rule>
+
+  <rule id="110301" level="15">
+    <if_sid>110102,110150,110160,110161,110162,110221</if_sid>
+    <match> 200 | 201 | 302 </match>
+    <description>CRITICAL: Possible successful exploitation — attack returned 2xx/302</description>
+    <group>exploitation_success,critical,incident,</group>
+    <mitre><id>T1190</id></mitre>
+  </rule>
+
+</group>

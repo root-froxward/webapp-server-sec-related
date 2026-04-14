@@ -1,0 +1,74 @@
+<!-- Wazuh Rules: Server-Side Template Injection (SSTI) Detection -->
+<!-- Rule IDs: 100380 - 100399 -->
+<group name="web,attack,ssti,">
+
+  <rule id="100380" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\{\{.*\}\}|\{%.*%\}|\$\{.*\})</url>
+    <description>SSTI: Template expression syntax detected in URL (Jinja2/Twig/FreeMarker).</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,ssti,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100381" level="9">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\{\{\s*7\s*\*\s*7\s*\}\}|\{\{\s*config\b|\{\{\s*self\b)</url>
+    <description>SSTI: Common SSTI probe detected ({{7*7}}, {{config}}, {{self}}).</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,ssti,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100382" level="10">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\{\{.*__class__.*__subclasses__|__mro__|__globals__|__builtins__)</url>
+    <description>SSTI: Python MRO chain traversal — RCE attempt via template injection.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,ssti,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100383" level="9">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\$\{T\(java\.lang|new\s+java\.lang\.Runtime|\.getRuntime\(\)\.exec)</url>
+    <description>SSTI: Spring/Java EL expression injection — code execution attempt.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,ssti,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100384" level="9">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(#\{.*\}|<#assign\b|\bnew\s+freemarker\.)</url>
+    <description>SSTI: FreeMarker/Thymeleaf template expression injection.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,ssti,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100385" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\{\{.*\|attr\(|\{\{.*\|join\(|\{\{.*\brequest\b)</url>
+    <description>SSTI: Jinja2 filter-based bypass attempt (attr/join/request).</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,ssti,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100386" level="12" frequency="5" timeframe="60">
+    <if_matched_group>ssti</if_matched_group>
+    <description>SSTI: Repeated template injection attempts — active exploitation.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,ssti,pci_dss_6.5.1,pci_dss_11.4,</group>
+  </rule>
+
+</group>

@@ -1,0 +1,44 @@
+<!-- Wazuh Rules: Open Redirect Detection -->
+<!-- Rule IDs: 100340 - 100349 -->
+<group name="web,attack,open_redirect,">
+
+  <rule id="100340" level="6">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\b(redirect|return|next|url|continue|dest|destination|redir|return_to|returnUrl|goto)\s*=\s*https?:\/\/)</url>
+    <description>Open Redirect: URL parameter redirecting to external domain.</description>
+    <mitre>
+      <id>T1189</id>
+    </mitre>
+    <group>web,attack,open_redirect,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100341" level="6">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\b(redirect|url|next|goto)\s*=\s*\/\/[^/])</url>
+    <description>Open Redirect: Protocol-relative URL redirect attempt (//domain).</description>
+    <mitre>
+      <id>T1189</id>
+    </mitre>
+    <group>web,attack,open_redirect,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100342" level="7">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\b(redirect|url)\s*=\s*(%2f%2f|%252f%252f|\/\\))</url>
+    <description>Open Redirect: Encoded or backslash redirect bypass attempt.</description>
+    <mitre>
+      <id>T1189</id>
+    </mitre>
+    <group>web,attack,open_redirect,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100343" level="12" frequency="8" timeframe="60">
+    <if_matched_group>open_redirect</if_matched_group>
+    <description>Open Redirect: Repeated redirect abuse — phishing campaign likely.</description>
+    <mitre>
+      <id>T1189</id>
+    </mitre>
+    <group>web,attack,open_redirect,pci_dss_6.5.1,pci_dss_11.4,</group>
+  </rule>
+
+</group>

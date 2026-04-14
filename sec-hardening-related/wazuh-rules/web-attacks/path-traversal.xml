@@ -1,0 +1,74 @@
+<!-- Wazuh Rules: Path Traversal Detection -->
+<!-- Rule IDs: 100180 - 100199 -->
+<group name="web,attack,path_traversal,">
+
+  <rule id="100180" level="6">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\.\.\/|\.\.\\|%2e%2e%2f|%2e%2e%5c)</url>
+    <description>Path Traversal: Basic ../ or ..\ pattern detected in URL.</description>
+    <mitre>
+      <id>T1083</id>
+    </mitre>
+    <group>web,attack,path_traversal,pci_dss_6.5.8,</group>
+  </rule>
+
+  <rule id="100181" level="7">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\.\.%c0%af|\.\.%c1%9c|%c0%ae%c0%ae)</url>
+    <description>Path Traversal: UTF-8 overlong encoding bypass attempt.</description>
+    <mitre>
+      <id>T1083</id>
+    </mitre>
+    <group>web,attack,path_traversal,pci_dss_6.5.8,</group>
+  </rule>
+
+  <rule id="100182" level="7">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\.\.%252f|\.\.%255c|%252e%252e)</url>
+    <description>Path Traversal: Double URL encoding bypass attempt.</description>
+    <mitre>
+      <id>T1083</id>
+    </mitre>
+    <group>web,attack,path_traversal,pci_dss_6.5.8,</group>
+  </rule>
+
+  <rule id="100183" level="7">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\.\.0x2f|\.\.0x5c|0x2e0x2e)</url>
+    <description>Path Traversal: Hex encoding bypass attempt.</description>
+    <mitre>
+      <id>T1083</id>
+    </mitre>
+    <group>web,attack,path_traversal,pci_dss_6.5.8,</group>
+  </rule>
+
+  <rule id="100184" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\.\./){4,}</url>
+    <description>Path Traversal: Deep traversal (4+ levels) — root filesystem access attempt.</description>
+    <mitre>
+      <id>T1083</id>
+    </mitre>
+    <group>web,attack,path_traversal,pci_dss_6.5.8,</group>
+  </rule>
+
+  <rule id="100185" level="7">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\.\./.*\.(conf|cfg|ini|log|bak|old|orig|sql|key|pem))</url>
+    <description>Path Traversal: Traversal targeting config/backup/key files.</description>
+    <mitre>
+      <id>T1083</id>
+    </mitre>
+    <group>web,attack,path_traversal,pci_dss_6.5.8,</group>
+  </rule>
+
+  <rule id="100186" level="12" frequency="8" timeframe="60">
+    <if_matched_group>path_traversal</if_matched_group>
+    <description>Path Traversal: Repeated traversal attempts — automated attack.</description>
+    <mitre>
+      <id>T1083</id>
+    </mitre>
+    <group>web,attack,path_traversal,pci_dss_6.5.8,pci_dss_11.4,</group>
+  </rule>
+
+</group>

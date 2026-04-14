@@ -1,0 +1,34 @@
+<!-- Wazuh Rules: HTTP Response Splitting Detection -->
+<!-- Rule IDs: 100330 - 100339 -->
+<group name="web,attack,response_splitting,">
+
+  <rule id="100330" level="7">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(%0d%0a|%0d|%0a|\r\n|\n|\r)(Set-Cookie|Location|Content-Type):</url>
+    <description>HTTP Response Splitting: CRLF injection with header injection attempt.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,response_splitting,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100331" level="7">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(%0d%0a){2}(\<html|\<script|\<body)</url>
+    <description>HTTP Response Splitting: Double CRLF with HTML injection — response body injection.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,response_splitting,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100332" level="12" frequency="5" timeframe="60">
+    <if_matched_group>response_splitting</if_matched_group>
+    <description>HTTP Response Splitting: Repeated injection attempts detected.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,response_splitting,pci_dss_6.5.1,pci_dss_11.4,</group>
+  </rule>
+
+</group>

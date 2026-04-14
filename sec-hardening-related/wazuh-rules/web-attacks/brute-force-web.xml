@@ -1,0 +1,88 @@
+<!-- Wazuh Rules: Web Application Brute Force Detection -->
+<!-- Rule IDs: 100270 - 100289 -->
+<group name="web,attack,brute_force_web,">
+
+  <rule id="100270" level="6">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\/login|\/signin|\/auth|\/authenticate|\/session)</url>
+    <status>401|403</status>
+    <description>Web Brute Force: Failed login attempt (401/403 on auth endpoint).</description>
+    <mitre>
+      <id>T1110</id>
+    </mitre>
+    <group>web,attack,brute_force_web,pci_dss_6.5.10,pci_dss_10.2.4,</group>
+  </rule>
+
+  <rule id="100271" level="10" frequency="10" timeframe="30">
+    <if_matched_sid>100270</if_matched_sid>
+    <same_source_ip />
+    <description>Web Brute Force: 10+ failed logins in 30s from same IP — brute force attack.</description>
+    <mitre>
+      <id>T1110</id>
+    </mitre>
+    <group>web,attack,brute_force_web,pci_dss_6.5.10,pci_dss_11.4,</group>
+  </rule>
+
+  <rule id="100272" level="12" frequency="30" timeframe="60">
+    <if_matched_sid>100270</if_matched_sid>
+    <same_source_ip />
+    <description>Web Brute Force: 30+ failed logins in 60s — aggressive brute force / credential stuffing.</description>
+    <mitre>
+      <id>T1110.004</id>
+    </mitre>
+    <group>web,attack,brute_force_web,pci_dss_6.5.10,pci_dss_11.4,</group>
+  </rule>
+
+  <rule id="100273" level="10" frequency="5" timeframe="30">
+    <if_matched_sid>100270</if_matched_sid>
+    <different_source_ip />
+    <description>Web Brute Force: Failed logins from multiple IPs — distributed brute force.</description>
+    <mitre>
+      <id>T1110</id>
+    </mitre>
+    <group>web,attack,brute_force_web,pci_dss_6.5.10,pci_dss_11.4,</group>
+  </rule>
+
+  <rule id="100274" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\/wp-login\.php|\/xmlrpc\.php|\/administrator\/)</url>
+    <status>401|403</status>
+    <description>Web Brute Force: Failed CMS admin login attempt (WordPress/Joomla).</description>
+    <mitre>
+      <id>T1110</id>
+    </mitre>
+    <group>web,attack,brute_force_web,pci_dss_6.5.10,</group>
+  </rule>
+
+  <rule id="100275" level="12" frequency="10" timeframe="60">
+    <if_matched_sid>100274</if_matched_sid>
+    <same_source_ip />
+    <description>Web Brute Force: Repeated CMS admin login failures — targeted attack.</description>
+    <mitre>
+      <id>T1110</id>
+    </mitre>
+    <group>web,attack,brute_force_web,pci_dss_6.5.10,pci_dss_11.4,</group>
+  </rule>
+
+  <rule id="100276" level="6">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\/api\/v\d+\/(login|token|oauth\/token|auth))</url>
+    <status>401|403|429</status>
+    <description>Web Brute Force: Failed API authentication attempt.</description>
+    <mitre>
+      <id>T1110</id>
+    </mitre>
+    <group>web,attack,brute_force_web,pci_dss_6.5.10,</group>
+  </rule>
+
+  <rule id="100277" level="10" frequency="20" timeframe="60">
+    <if_matched_sid>100276</if_matched_sid>
+    <same_source_ip />
+    <description>Web Brute Force: API token/auth brute force — automated credential guessing.</description>
+    <mitre>
+      <id>T1110</id>
+    </mitre>
+    <group>web,attack,brute_force_web,pci_dss_6.5.10,pci_dss_11.4,</group>
+  </rule>
+
+</group>

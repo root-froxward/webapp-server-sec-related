@@ -1,0 +1,115 @@
+<!-- Wazuh Rules: MITRE ATT&CK - Privilege Escalation (TA0004) -->
+<!-- Rule IDs: 101150 - 101199 -->
+<group name="mitre,privilege_escalation,">
+
+  <rule id="101150" level="10">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bsudo\b\s+.*\b(bash|sh|su|passwd|visudo|chmod\s+[47])\b)</match>
+    <description>T1548.003 - Sudo Abuse: Sudo used to execute shell or modify credentials.</description>
+    <mitre>
+      <id>T1548.003</id>
+    </mitre>
+    <group>mitre,privilege_escalation,sudo_abuse,</group>
+  </rule>
+
+  <rule id="101151" level="12">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(sudo:.*COMMAND=.*(\/bin\/bash|\/bin\/sh).*;\s+USER=root)</match>
+    <description>T1548.003 - Sudo Abuse: Root shell obtained via sudo.</description>
+    <mitre>
+      <id>T1548.003</id>
+    </mitre>
+    <group>mitre,privilege_escalation,sudo_abuse,</group>
+  </rule>
+
+  <rule id="101152" level="10">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bchmod\b\s+[u+]*s\b|\bchmod\b\s+[24][0-7]{3}\b)</match>
+    <description>T1548.001 - Setuid/Setgid: SUID/SGID bit set on file — privilege escalation vector.</description>
+    <mitre>
+      <id>T1548.001</id>
+    </mitre>
+    <group>mitre,privilege_escalation,suid_sgid,</group>
+  </rule>
+
+  <rule id="101153" level="10">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bfind\b\s+.*-perm\s+(-4000|-2000|\/4000|\/u=s|\/g=s))</match>
+    <description>T1548.001 - Setuid/Setgid: Enumeration of SUID/SGID binaries — escalation recon.</description>
+    <mitre>
+      <id>T1548.001</id>
+    </mitre>
+    <group>mitre,privilege_escalation,suid_sgid,</group>
+  </rule>
+
+  <rule id="101154" level="10">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bsu\b\s+-\s*$|\bsu\b\s+-\s+root\b|\bsu\b\s+root\b)</match>
+    <description>T1078.003 - Valid Accounts: Switch to root user via su command.</description>
+    <mitre>
+      <id>T1078.003</id>
+    </mitre>
+    <group>mitre,privilege_escalation,su_root,</group>
+  </rule>
+
+  <rule id="101155" level="12">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(kernel:.*segfault.*in\s+\/usr\/bin\/sudo|BADSUDO|sudo.*overflow)</match>
+    <description>T1068 - Exploitation for Privilege Escalation: Sudo exploit or crash detected.</description>
+    <mitre>
+      <id>T1068</id>
+    </mitre>
+    <group>mitre,privilege_escalation,sudo_exploit,</group>
+  </rule>
+
+  <rule id="101156" level="10">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bcapsh\b|\bsetcap\b\s+cap_|\bgetcap\b\s+)</match>
+    <description>T1548 - Abuse Elevation Control: Linux capabilities manipulation detected.</description>
+    <mitre>
+      <id>T1548</id>
+    </mitre>
+    <group>mitre,privilege_escalation,capabilities,</group>
+  </rule>
+
+  <rule id="101157" level="10">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bpkexec\b|\bpolkit\b.*CVE|org\.freedesktop\.policykit)</match>
+    <description>T1068 - Exploitation for Privilege Escalation: Polkit/pkexec exploitation attempt.</description>
+    <mitre>
+      <id>T1068</id>
+    </mitre>
+    <group>mitre,privilege_escalation,polkit,</group>
+  </rule>
+
+  <rule id="101158" level="9">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bnsenter\b\s+--target\s+1|unshare\b\s+--mount.*chroot)</match>
+    <description>T1611 - Escape to Host: Container escape attempt via nsenter/unshare.</description>
+    <mitre>
+      <id>T1611</id>
+    </mitre>
+    <group>mitre,privilege_escalation,container_escape,</group>
+  </rule>
+
+  <rule id="101159" level="12">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(docker\b\s+run\s+.*--privileged|docker\b\s+exec\s+.*-it\s+.*bash)</match>
+    <description>T1611 - Escape to Host: Privileged Docker container launched or interactive exec.</description>
+    <mitre>
+      <id>T1611</id>
+    </mitre>
+    <group>mitre,privilege_escalation,container_escape,</group>
+  </rule>
+
+  <rule id="101160" level="10">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bptrace\b\s+PTRACE_ATTACH|\bptrace\b\s+PTRACE_SEIZE|strace\s+-p\s+\d+)</match>
+    <description>T1055 - Process Injection: ptrace/strace attaching to running process.</description>
+    <mitre>
+      <id>T1055</id>
+    </mitre>
+    <group>mitre,privilege_escalation,process_injection,</group>
+  </rule>
+
+</group>

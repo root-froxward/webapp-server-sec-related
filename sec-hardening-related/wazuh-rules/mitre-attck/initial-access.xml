@@ -1,0 +1,137 @@
+<!-- Wazuh Rules: MITRE ATT&CK - Initial Access (TA0001) -->
+<!-- Rule IDs: 101000 - 101049 -->
+<group name="mitre,initial_access,">
+
+  <rule id="101000" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\.(cgi|action|do|struts)\?.*=.*(%\{|$\{))</url>
+    <description>T1190 - Exploit Public-Facing Application: Struts/OGNL expression injection.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>mitre,initial_access,exploit_public_app,</group>
+  </rule>
+
+  <rule id="101001" level="9">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\$\{jndi:(ldap|rmi|dns|iiop):\/\/)</url>
+    <description>T1190 - Exploit Public-Facing Application: Log4Shell (CVE-2021-44228) JNDI injection.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>mitre,initial_access,exploit_public_app,log4shell,</group>
+  </rule>
+
+  <rule id="101002" level="9">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\$\{(\$\{lower:|upper:|env:|sys:|date:).*j.*n.*d.*i)</url>
+    <description>T1190 - Exploit Public-Facing Application: Obfuscated Log4Shell bypass attempt.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>mitre,initial_access,exploit_public_app,log4shell,</group>
+  </rule>
+
+  <rule id="101003" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\/cgi-bin\/.*\.sh|\/cgi-bin\/.*\(\)\s*\{)</url>
+    <description>T1190 - Exploit Public-Facing Application: Shellshock (CVE-2014-6271) attempt.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>mitre,initial_access,exploit_public_app,shellshock,</group>
+  </rule>
+
+  <rule id="101004" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\/\.git\/(HEAD|config|index|objects|refs)|\/\.svn\/(entries|wc\.db))</url>
+    <description>T1190 - Exploit Public-Facing Application: VCS metadata exposure (.git/.svn).</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>mitre,initial_access,exploit_public_app,</group>
+  </rule>
+
+  <rule id="101005" level="10">
+    <if_sid>5710,5711,5716</if_sid>
+    <match type="pcre2">(?i)(Failed password|authentication failure|invalid user)</match>
+    <description>T1078 - Valid Accounts: SSH authentication failure — potential credential abuse.</description>
+    <mitre>
+      <id>T1078</id>
+    </mitre>
+    <group>mitre,initial_access,valid_accounts,</group>
+  </rule>
+
+  <rule id="101006" level="12" frequency="10" timeframe="120">
+    <if_matched_sid>101005</if_matched_sid>
+    <same_source_ip />
+    <description>T1078 - Valid Accounts: Brute force against SSH from single source.</description>
+    <mitre>
+      <id>T1078</id>
+      <id>T1110</id>
+    </mitre>
+    <group>mitre,initial_access,valid_accounts,brute_force,</group>
+  </rule>
+
+  <rule id="101007" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\/actuator\/(env|health|info|beans|mappings|configprops|heapdump))</url>
+    <description>T1190 - Exploit Public-Facing Application: Spring Boot Actuator endpoint access.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>mitre,initial_access,exploit_public_app,</group>
+  </rule>
+
+  <rule id="101008" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\/manager\/html|\/jmx-console|\/web-console|\/invoker\/)</url>
+    <description>T1190 - Exploit Public-Facing Application: Java application server admin console access.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>mitre,initial_access,exploit_public_app,</group>
+  </rule>
+
+  <rule id="101009" level="9">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\/solr\/.*\/select\?.*\bq=.*\{!.*\}|\/solr\/admin\/cores)</url>
+    <description>T1190 - Exploit Public-Facing Application: Apache Solr injection attempt.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>mitre,initial_access,exploit_public_app,</group>
+  </rule>
+
+  <rule id="101010" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(ProxyShell|ProxyLogon|ProxyNotShell|\/autodiscover\/|\/mapi\/nspi\/|\/owa\/auth\/)</url>
+    <description>T1190 - Exploit Public-Facing Application: Exchange ProxyShell/ProxyLogon probe.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>mitre,initial_access,exploit_public_app,</group>
+  </rule>
+
+  <rule id="101011" level="7">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(Accepted\s+password.*from\s+\d+\.\d+\.\d+\.\d+.*port\s+\d+)</match>
+    <field name="srcip" type="pcre2">^(?!10\.|172\.(1[6-9]|2\d|3[01])\.|192\.168\.)</field>
+    <description>T1133 - External Remote Services: SSH login from external/public IP address.</description>
+    <mitre>
+      <id>T1133</id>
+    </mitre>
+    <group>mitre,initial_access,external_remote_services,</group>
+  </rule>
+
+  <rule id="101012" level="10">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(Accepted\s+(password|publickey)\s+for\s+root\s+from)</match>
+    <description>T1078.003 - Valid Accounts: Root login via SSH — high-privilege access.</description>
+    <mitre>
+      <id>T1078.003</id>
+    </mitre>
+    <group>mitre,initial_access,valid_accounts,</group>
+  </rule>
+
+</group>

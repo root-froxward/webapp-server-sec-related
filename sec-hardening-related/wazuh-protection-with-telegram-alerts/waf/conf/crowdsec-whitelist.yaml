@@ -1,0 +1,13 @@
+# CrowdSec whitelist configuration
+# Add your trusted IPs and networks here
+
+name: wazuh-suite/whitelist
+description: "Whitelisted IPs for wazuh-protection-suite"
+whitelist:
+  reason: "trusted infrastructure"
+  ip:
+    # - "1.2.3.4"
+  cidr:
+    # - "10.0.0.0/8"
+    # - "172.16.0.0/12"
+    # - "192.168.0.0/16"

@@ -1,0 +1,94 @@
+<!-- Wazuh Rules: Malicious File Upload Detection -->
+<!-- Rule IDs: 100460 - 100479 -->
+<group name="web,attack,upload_attacks,">
+
+  <rule id="100460" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(upload|file_upload|import).*\.(php[3-8]?|phtml|phar|php\.jpg)</url>
+    <description>Upload Attack: PHP file upload attempt with executable extension.</description>
+    <mitre>
+      <id>T1505.003</id>
+    </mitre>
+    <group>web,attack,upload_attacks,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100461" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(upload|file_upload).*\.(asp|aspx|ashx|asmx|cer|asa)</url>
+    <description>Upload Attack: ASP/ASPX file upload attempt.</description>
+    <mitre>
+      <id>T1505.003</id>
+    </mitre>
+    <group>web,attack,upload_attacks,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100462" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(upload|file_upload).*\.(jsp|jspx|jsw|war|ear)</url>
+    <description>Upload Attack: JSP/WAR file upload attempt.</description>
+    <mitre>
+      <id>T1505.003</id>
+    </mitre>
+    <group>web,attack,upload_attacks,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100463" level="9">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(upload|file_upload).*\.(exe|dll|bat|cmd|ps1|vbs|wsf|scr|com|msi)</url>
+    <description>Upload Attack: Windows executable/script file upload attempt.</description>
+    <mitre>
+      <id>T1505.003</id>
+    </mitre>
+    <group>web,attack,upload_attacks,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100464" level="7">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(upload|file_upload).*\.(svg|html|htm|xhtml)\b</url>
+    <description>Upload Attack: SVG/HTML file upload — potential stored XSS vector.</description>
+    <mitre>
+      <id>T1189</id>
+    </mitre>
+    <group>web,attack,upload_attacks,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100465" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(Content-Type:.*image\/(jpeg|png|gif).*\.(php|asp|jsp|exe))</url>
+    <description>Upload Attack: MIME type mismatch — image Content-Type with executable extension.</description>
+    <mitre>
+      <id>T1505.003</id>
+    </mitre>
+    <group>web,attack,upload_attacks,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100466" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\.(php|asp|jsp)\%00\.(jpg|png|gif)|\.(php|asp|jsp)\.jpg)</url>
+    <description>Upload Attack: Null byte or double extension bypass attempt.</description>
+    <mitre>
+      <id>T1505.003</id>
+    </mitre>
+    <group>web,attack,upload_attacks,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100467" level="7">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(upload|file_upload).*\.(htaccess|web\.config|\.user\.ini)</url>
+    <description>Upload Attack: Server configuration file upload attempt (.htaccess/web.config).</description>
+    <mitre>
+      <id>T1505.003</id>
+    </mitre>
+    <group>web,attack,upload_attacks,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100468" level="12" frequency="5" timeframe="60">
+    <if_matched_group>upload_attacks</if_matched_group>
+    <description>Upload Attack: Repeated malicious file upload attempts — persistent exploitation.</description>
+    <mitre>
+      <id>T1505.003</id>
+    </mitre>
+    <group>web,attack,upload_attacks,pci_dss_6.5.1,pci_dss_11.4,</group>
+  </rule>
+
+</group>

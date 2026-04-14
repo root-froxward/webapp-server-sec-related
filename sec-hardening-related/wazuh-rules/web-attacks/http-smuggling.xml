@@ -1,0 +1,54 @@
+<!-- Wazuh Rules: HTTP Request Smuggling Detection -->
+<!-- Rule IDs: 100250 - 100269 -->
+<group name="web,attack,http_smuggling,">
+
+  <rule id="100250" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(Transfer-Encoding\s*:\s*chunked.*Content-Length|Content-Length.*Transfer-Encoding\s*:\s*chunked)</url>
+    <description>HTTP Smuggling: Both Transfer-Encoding and Content-Length headers — CL.TE/TE.CL attack.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,http_smuggling,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100251" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(Transfer-Encoding\s*:\s*(chunked\s*,\s*identity|identity\s*,\s*chunked|[\x0b\x0c]chunked))</url>
+    <description>HTTP Smuggling: Obfuscated Transfer-Encoding header value.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,http_smuggling,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100252" level="7">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\r\n\r\n.*\b(GET|POST|PUT|DELETE|PATCH)\s+\/)</url>
+    <description>HTTP Smuggling: Embedded HTTP request detected within body.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,http_smuggling,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100253" level="7">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(Content-Length\s*:\s*\d+\r?\nContent-Length\s*:\s*\d+)</url>
+    <description>HTTP Smuggling: Duplicate Content-Length headers detected.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,http_smuggling,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100254" level="12" frequency="4" timeframe="60">
+    <if_matched_group>http_smuggling</if_matched_group>
+    <description>HTTP Smuggling: Repeated smuggling attempts — active exploitation likely.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,http_smuggling,pci_dss_6.5.1,pci_dss_11.4,</group>
+  </rule>
+
+</group>

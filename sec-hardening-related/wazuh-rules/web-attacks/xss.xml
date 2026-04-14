@@ -1,0 +1,104 @@
+<!-- Wazuh Rules: Cross-Site Scripting (XSS) Detection -->
+<!-- Rule IDs: 100120 - 100139 -->
+<group name="web,attack,xss,">
+
+  <rule id="100120" level="6">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\<script\b|\%3Cscript\b)</url>
+    <description>XSS: Script tag detected in URL parameter.</description>
+    <mitre>
+      <id>T1189</id>
+    </mitre>
+    <group>web,attack,xss,pci_dss_6.5.7,gdpr_IV_35.7.d,</group>
+  </rule>
+
+  <rule id="100121" level="6">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\bon\w+\s*=\s*["\']|(\%22|\%27)\s*on\w+\s*=)</url>
+    <description>XSS: Event handler injection attempt (onload, onerror, onclick etc.).</description>
+    <mitre>
+      <id>T1189</id>
+    </mitre>
+    <group>web,attack,xss,pci_dss_6.5.7,</group>
+  </rule>
+
+  <rule id="100122" level="6">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(javascript\s*:|vbscript\s*:|livescript\s*:)</url>
+    <description>XSS: JavaScript/VBScript URI scheme injection attempt.</description>
+    <mitre>
+      <id>T1189</id>
+    </mitre>
+    <group>web,attack,xss,pci_dss_6.5.7,</group>
+  </rule>
+
+  <rule id="100123" level="7">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\<iframe\b|\<embed\b|\<object\b|\<applet\b)</url>
+    <description>XSS: Embedded content tag injection (iframe/embed/object/applet).</description>
+    <mitre>
+      <id>T1189</id>
+    </mitre>
+    <group>web,attack,xss,pci_dss_6.5.7,</group>
+  </rule>
+
+  <rule id="100124" level="6">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\<img\b[^>]*\bonerror\b|\<svg\b[^>]*\bonload\b|\<body\b[^>]*\bonload\b)</url>
+    <description>XSS: Tag with event handler injection (img onerror / svg onload / body onload).</description>
+    <mitre>
+      <id>T1189</id>
+    </mitre>
+    <group>web,attack,xss,pci_dss_6.5.7,</group>
+  </rule>
+
+  <rule id="100125" level="6">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(document\.(cookie|domain|write|location)|window\.(location|open))</url>
+    <description>XSS: DOM-based XSS — document/window object access in URL.</description>
+    <mitre>
+      <id>T1189</id>
+    </mitre>
+    <group>web,attack,xss,pci_dss_6.5.7,</group>
+  </rule>
+
+  <rule id="100126" level="6">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\balert\s*\(|\bconfirm\s*\(|\bprompt\s*\(|\beval\s*\()</url>
+    <description>XSS: JavaScript function injection (alert/confirm/prompt/eval).</description>
+    <mitre>
+      <id>T1189</id>
+    </mitre>
+    <group>web,attack,xss,pci_dss_6.5.7,</group>
+  </rule>
+
+  <rule id="100127" level="7">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\<\s*\/?\s*(style|link)\b[^>]*(expression|behavior|url)\s*\()</url>
+    <description>XSS: CSS-based injection attempt (expression/behavior in style).</description>
+    <mitre>
+      <id>T1189</id>
+    </mitre>
+    <group>web,attack,xss,pci_dss_6.5.7,</group>
+  </rule>
+
+  <rule id="100128" level="12" frequency="10" timeframe="60">
+    <if_matched_group>xss</if_matched_group>
+    <description>XSS: Repeated XSS attempts — likely automated scanner or attack.</description>
+    <mitre>
+      <id>T1189</id>
+    </mitre>
+    <group>web,attack,xss,pci_dss_6.5.7,pci_dss_11.4,</group>
+  </rule>
+
+  <rule id="100129" level="6">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(data\s*:\s*text\/html|data\s*:\s*application\/xhtml)</url>
+    <description>XSS: Data URI with HTML content type detected.</description>
+    <mitre>
+      <id>T1189</id>
+    </mitre>
+    <group>web,attack,xss,pci_dss_6.5.7,</group>
+  </rule>
+
+</group>

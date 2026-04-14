@@ -1,0 +1,95 @@
+<!-- Wazuh Rules: MITRE ATT&CK - Collection (TA0009) -->
+<!-- Rule IDs: 101400 - 101449 -->
+<group name="mitre,collection,">
+
+  <rule id="101400" level="8">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\btar\b\s+(-czf|-cjf|-cf)\s+.*\/(home|etc|var|opt|srv|root))</match>
+    <description>T1560.001 - Archive Collected Data: Tar archive of sensitive directories created.</description>
+    <mitre>
+      <id>T1560.001</id>
+    </mitre>
+    <group>mitre,collection,archive,</group>
+  </rule>
+
+  <rule id="101401" level="8">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bzip\b\s+-r\s+.*\/(home|etc|var)|\b7z\b\s+a\s+.*\/(home|etc|var))</match>
+    <description>T1560.001 - Archive Collected Data: Zip/7z archive of sensitive directories.</description>
+    <mitre>
+      <id>T1560.001</id>
+    </mitre>
+    <group>mitre,collection,archive,</group>
+  </rule>
+
+  <rule id="101402" level="9">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bmysqldump\b|\bpg_dump\b|\bmongodump\b|\bsqlite3\b\s+.*\.dump)</match>
+    <description>T1005 - Data from Local System: Database dump command executed.</description>
+    <mitre>
+      <id>T1005</id>
+    </mitre>
+    <group>mitre,collection,database_dump,</group>
+  </rule>
+
+  <rule id="101403" level="8">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bscreenshot\b|\bscrot\b|\bxwd\b|\bimport\b\s+-window\s+root|\bgnome-screenshot\b)</match>
+    <description>T1113 - Screen Capture: Screenshot tool executed.</description>
+    <mitre>
+      <id>T1113</id>
+    </mitre>
+    <group>mitre,collection,screen_capture,</group>
+  </rule>
+
+  <rule id="101404" level="9">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\btcpdump\b\s+-w|\btshark\b\s+-w|\bdumpcap\b\s+-w)</match>
+    <description>T1040 - Network Sniffing: Packet capture to file initiated.</description>
+    <mitre>
+      <id>T1040</id>
+    </mitre>
+    <group>mitre,collection,packet_capture,</group>
+  </rule>
+
+  <rule id="101405" level="7">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bfind\b\s+.*\.(docx?|xlsx?|pptx?|pdf|csv|txt|json|xml)\b.*-exec\b.*\bcp\b)</match>
+    <description>T1005 - Data from Local System: Bulk document collection via find+copy.</description>
+    <mitre>
+      <id>T1005</id>
+    </mitre>
+    <group>mitre,collection,document_harvest,</group>
+  </rule>
+
+  <rule id="101406" level="8">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\barecord\b|\bparecord\b|\bffmpeg\b\s+.*-f\s+(alsa|pulse|avfoundation).*-i\b)</match>
+    <description>T1123 - Audio Capture: Audio recording tool executed.</description>
+    <mitre>
+      <id>T1123</id>
+    </mitre>
+    <group>mitre,collection,audio_capture,</group>
+  </rule>
+
+  <rule id="101407" level="8">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bffmpeg\b\s+.*-f\s+(v4l2|x11grab|video4linux)|\bstreamer\b|\bfswebcam\b)</match>
+    <description>T1125 - Video Capture: Video/webcam capture tool executed.</description>
+    <mitre>
+      <id>T1125</id>
+    </mitre>
+    <group>mitre,collection,video_capture,</group>
+  </rule>
+
+  <rule id="101408" level="9">
+    <if_group>syslog</if_group>
+    <match type="pcre2">(?i)(\bxclip\b|\bxdotool\b|\bxsel\b\s+-[bo]|\bwl-paste\b)</match>
+    <description>T1115 - Clipboard Data: Clipboard content extraction tool detected.</description>
+    <mitre>
+      <id>T1115</id>
+    </mitre>
+    <group>mitre,collection,clipboard,</group>
+  </rule>
+
+</group>

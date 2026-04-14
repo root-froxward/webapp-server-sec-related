@@ -1,0 +1,64 @@
+<!-- Wazuh Rules: Insecure Deserialization Detection -->
+<!-- Rule IDs: 100360 - 100379 -->
+<group name="web,attack,deserialization,">
+
+  <rule id="100360" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(O:\d+:"[^"]+"|a:\d+:\{)</url>
+    <description>Deserialization: PHP serialized object detected in URL parameter.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,deserialization,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100361" level="9">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(rO0ABX|aced0005|AAAAAA[A-Za-z0-9+/])</url>
+    <description>Deserialization: Java serialized object detected (magic bytes rO0ABX/aced0005).</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,deserialization,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100362" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(__reduce__|__setstate__|cPickle|pickle\.loads|yaml\.load)</url>
+    <description>Deserialization: Python pickle/YAML deserialization pattern detected.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,deserialization,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100363" level="9">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(ysoserial|CommonsCollections|Spring[0-9]|Jdk7u21|URLDNS)</url>
+    <description>Deserialization: Known Java deserialization exploit gadget chain detected.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,deserialization,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100364" level="8">
+    <if_group>web|accesslog</if_group>
+    <url type="pcre2">(?i)(\$type\s*:|TypeNameHandling|ObjectCreationHandling|__type)</url>
+    <description>Deserialization: .NET JSON deserialization type indicator detected.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,deserialization,pci_dss_6.5.1,</group>
+  </rule>
+
+  <rule id="100365" level="12" frequency="5" timeframe="60">
+    <if_matched_group>deserialization</if_matched_group>
+    <description>Deserialization: Repeated deserialization attack attempts — active exploitation.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>web,attack,deserialization,pci_dss_6.5.1,pci_dss_11.4,</group>
+  </rule>
+
+</group>
